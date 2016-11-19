@@ -15,7 +15,7 @@
   "main": "lib/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kmamykin/mqtt-websocket-stream.git"
+    "url": "https://github.com/kmamykin/aws-mqtt.git"
   },
   "scripts": {
     "compile": "rm -rf lib && babel --presets es2015 -d lib src",

@@ -3,15 +3,13 @@
 [![NPM](https://nodei.co/npm/aws-mqtt.png?global=true)](https://nodei.co/npm/aws-mqtt/)
 
 This module implements a client to connect to AWS IoT MQTT broker using WebSockets. 
-It can be used to create serverless realtime pub/sub applications that elastically scale with demand.
-AWS MQTT Client can used in a browser as well as in a node.js environment.  
+It can be used to create serverless realtime applications that elastically scale with demand.
+AWS MQTT Client can used in browser as well as in node.js environment.  
 
 Up until now an implementation of a realtime in-browser application required the use of either an external service 
 (such as [Pusher](https://pusher.com/), [PubNub](https://www.pubnub.com/) and such)
 or roll your own servers (e.g. using socket.io) that maintain connections with connected browsers and need scaling to respond to the changes in traffic.
-Using AWS IoT MQTT broker as the realtime backend provides a low cost, automatically scaled service for your application. 
-
-Internally the module signs the Web Socket url to connect to with AWS credentials, and re-signs it every time the client went offline and reconnecting.
+Using AWS IoT MQTT broker as the realtime backend provides a low cost automatically scaled service for your application. 
 
 ### Disclaimer
 
@@ -30,13 +28,13 @@ when using in a node environment (not browser), install WebSocket implementation
 
 ### In Browser
 
-The example below assumes the use of Babel/Webpack.
+The example below assumes the use of Babel/Webpack. `aws-sdk` now officially supports bundling with webpack, [with a few things to know](http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/webpack.html).
 
 ```javascript
 import AWS from 'aws-sdk/global'
 import AWSMqtt from 'aws-mqtt'
 AWS.config.region = 'us-east-1' // your region
-AWS.config.credentials = ... // See Security regarding which credentials to use
+AWS.config.credentials = ... // See AWS Setup and Security below 
 
 const client = AWSMqtt.connect({
   WebSocket: window.WebSocket, 
@@ -61,6 +59,8 @@ client.on('offline', () => {
 ```
 The `client` object in the above example is an instance of MqttClient from MQTT.js. For events and API see the [docs](https://github.com/mqttjs/MQTT.js#api).
 
+
+
 ### In Node.js
 
 The same usage as in browser, but need to pass the constructor function for WebSocket in the options. [ws](https://github.com/websockets/ws) is recommented.
@@ -71,8 +71,8 @@ const AWS = require('aws-sdk')
 const AWSMqtt = require('aws-mqtt')
 const WebSocket = require('ws')
 
-AWS.config.region = 'us-east-1' // your region
-AWS.config.credentials = ... // See Security regarding which credentials to use
+AWS.config.region = 'us-east-1' 
+AWS.config.credentials = ... 
 
 const client = AWSMqtt.connect({
   WebSocket: WebSocket, 
@@ -88,15 +88,15 @@ Note, that `AWSMqtt.connect`, the returns MqttClient, which sets up internal tim
 This is fine if you are developing a *long running* server app that subscribes and/or publishes messages.
 For ephemeral functions, such as AWS Lambda, this approach will cause the function invocation to timeout. 
 
-In such use cases, it needed to use `AWSMqtt.publisher` method like this:
+To publish a message to a topic - create a publish function through `AWSMqtt.publisher` invocation and call it with topic and message:
 
 ```javascript
 const AWS = require('aws-sdk')
 const AWSMqtt = require('aws-mqtt')
 const WebSocket = require('ws')
 
-AWS.config.region = 'us-east-1' // your region
-AWS.config.credentials = ... // See Security regarding which credentials to use
+AWS.config.region = 'us-east-1' 
+AWS.config.credentials = ... 
 
 const publish = AWSMqtt.publisher({
   WebSocket: WebSocket, 
@@ -105,14 +105,41 @@ const publish = AWSMqtt.publisher({
   endpoint: '...iot.us-east-1.amazonaws.com' 
 })
 
-
+// publish returns a Promise
 publish('/myTopic', 'my message').then(console.log, console.error)
 ```
 
-## AWS Setup
+## AWS Setup and Security
 
-### Security
+First, the required primer on [AWS JavaScript Configuration](http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/configuring-the-jssdk.html).
+There are multiple ways to configure AWS based on the use case. For example for usage in a web browser by un-authenticated users, the best practice is to use Cognito Identity.
+When Cognito Identity Pool is created, it's assigned an IAM role that is used by un-authenticated users. 
+That role needs to be given minimum required permissions (principle of least privilege). 
+In the case of IoT MQTT broker, that means restricting un-authenticated user to subscribe to specific topics or publish to specific topics.
+Read more on [AWS IoT Policies](http://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html).
 
+An example of policy statement for an un-authenticated user (tweak as you see fit, note the use of `iot:ClientId` to dynamically limit the topics):
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [{
+        "Effect": "Allow",
+        "Action": ["iot:Connect"],
+        "Resource": ["*"]
+    }, {
+        "Effect": "Allow",
+        "Action":["iot:Subscribe"],
+        "Resource": ["arn:aws:iot:us-east-1:123456789012:topic/foo/bar"]
+    }, {
+        "Effect": "Allow",
+        "Action": ["iot:Publish"],
+        "Resource": ["arn:aws:iot:us-east-1:123456789012:topic/foo/bar/${iot:ClientId}"]
+    }]
+}
+```
+
+
+One of the options that needs to be passed to AWSMqtt connect methods is credentials.  
 ## Examples
 
 In `./examples` folder there are two example projects: 
