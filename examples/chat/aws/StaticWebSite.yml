@@ -1,0 +1,86 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  DomainName:
+    Type: String
+    Description: Domain name for the static web site (site.domain.com)
+  HostedZone:
+    Type: String
+    Description: Root hosted domain name (domain.com)
+  IndexDocument:
+    Type: String
+    Default: "index.html"
+  ErrorDocument:
+    Type: String
+    Default: "index.html"
+Resources:
+  Bucket:
+    Type: "AWS::S3::Bucket"
+    DeletionPolicy: "Retain"
+    Properties:
+      BucketName: !Ref DomainName
+      AccessControl: "PublicRead"
+      WebsiteConfiguration:
+        IndexDocument: !Ref IndexDocument
+        ErrorDocument: !Ref ErrorDocument
+  Certificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      DomainValidationOptions:
+        - DomainName: !Ref DomainName
+          ValidationDomain: !Ref HostedZone
+  Distribution:
+    Type: 'AWS::CloudFront::Distribution'
+    Properties:
+      DistributionConfig:
+        Enabled: 'true'
+        Aliases:
+          - !Ref DomainName
+        Origins:
+          - DomainName: !GetAtt Bucket.DomainName
+            Id: BucketCustomOrigin
+            CustomOriginConfig:
+              HTTPPort: '80'
+              HTTPSPort: '443'
+              OriginProtocolPolicy: http-only
+        DefaultRootObject: !Ref IndexDocument
+        # http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html#ExpirationDownloadDist
+        DefaultCacheBehavior:
+          TargetOriginId: BucketCustomOrigin
+          ForwardedValues:
+            QueryString: 'false'
+            Cookies:
+              Forward: none
+          ViewerProtocolPolicy: allow-all
+          Compress: 'true'
+          DefaultTTL: 0
+          MinTTL: 0
+        ViewerCertificate:
+          AcmCertificateArn: !Ref Certificate
+          MinimumProtocolVersion: 'TLSv1'
+          SslSupportMethod: 'sni-only'
+        #Logging:
+        #  IncludeCookies: 'true'
+        #  Bucket: mylogs.s3.amazonaws.com
+        #  Prefix: myprefix
+  DNSRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Join [ "", [ !Ref HostedZone, "." ] ]
+      Name: !Join [ "", [ !Ref DomainName, "." ] ]
+      Type: CNAME
+      TTL: '600'
+      ResourceRecords:
+        - !GetAtt Distribution.DomainName
+Outputs:
+  BucketName:
+    Value: !Ref Bucket
+  BucketDomainName:
+    Value: !GetAtt Bucket.DomainName
+  BucketURL:
+    Value: !GetAtt Bucket.WebsiteURL
+  Distribution:
+    Value: !Ref Distribution
+  DistributionDomainName:
+    Value: !GetAtt Distribution.DomainName

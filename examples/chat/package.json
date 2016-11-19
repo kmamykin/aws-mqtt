@@ -1,0 +1,32 @@
+{
+  "name": "chat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {},
+  "scripts": {
+    "start": "node ./dev-server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf ./dist && webpack --config webpack.config.js && cp ./src/index.html ./dist/",
+    "deploy": "npm run build && aws s3 sync ./dist s3://mqtt.amare.tv/ --acl public-read --delete --profile amare-admin",
+    "aws:stack:create": "aws cloudformation create-stack --stack-name frontend --template-body file://./aws/stack.yml --parameters ParameterKey=DomainName,ParameterValue=mqtt.amare.tv --profile amare-admin --capabilities CAPABILITY_IAM",
+    "aws:stack:update": "aws cloudformation update-stack --stack-name frontend --template-body file://./aws/stack.yml --parameters ParameterKey=DomainName,ParameterValue=mqtt.amare.tv --profile amare-admin --capabilities CAPABILITY_IAM",
+    "aws:stack:validate": "aws cloudformation validate-template --template-body file://./aws/stack.yml",
+    "aws:stack:delete": "aws cloudformation delete-stack --stack-name frontend --profile amare-admin",
+    "aws:stack:describe": "aws cloudformation describe-stacks --stack-name frontend --profile amare-admin"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.6.3"
+  },
+  "devDependencies": {
+    "babel-core": "^6.14.0",
+    "babel-loader": "^6.2.5",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-preset-stage-2": "^6.13.0",
+    "json-loader": "^0.5.4",
+    "webpack": "^1.13.2",
+    "webpack-dev-server": "^1.16.1"
+  }
+}

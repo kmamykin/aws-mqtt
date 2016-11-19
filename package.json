@@ -1,0 +1,22 @@
+{
+  "name": "aws-mqtt",
+  "version": "0.1.0",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "compile": "rm -rf lib && babel --presets es2015 -d lib src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.16.0",
+    "babel-preset-es2015": "^6.16.0"
+  },
+  "dependencies": {
+    "aws-signature-v4": "^1.0.1",
+    "mqtt": "^2.0.0",
+    "mqtt-websocket-stream": "^0.1.0",
+    "ws": "^1.1.1"
+  }
+}
