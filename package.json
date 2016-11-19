@@ -1,7 +1,15 @@
 {
   "name": "aws-mqtt",
   "version": "0.1.0",
-  "description": "AWS MQTT client",
+  "description": "AWS IoT MQTT broker client",
+  "keywords": [
+    "aws",
+    "iot",
+    "mqtt",
+    "client",
+    "stream",
+    "websocket"
+  ],
   "main": "lib/index.js",
   "repository": {
     "type": "git",
@@ -20,7 +28,9 @@
   "dependencies": {
     "aws-signature-v4": "^1.0.1",
     "mqtt": "^2.0.0",
-    "mqtt-websocket-stream": "^0.1.0",
-    "ws": "^1.1.1"
+    "mqtt-websocket-stream": "^0.1.0"
+  },
+  "peerDependencies": {
+    "aws-sdk": "^2.6.3"
   }
 }

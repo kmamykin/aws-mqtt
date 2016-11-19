@@ -2,7 +2,8 @@
 // Example: node publish.js "/chat" Hello
 
 const AWS = require('aws-sdk')
-const AWSMqttClient = require('../../lib/ServerClient')
+const AWSMqtt = require('../../lib/index')
+const WebSocket = require('ws')
 
 const config = require('../config') // NOTE: make sure to copy config.example.js to config.js and fill in your values
 const {logEventsToConsole} = require('./utils')
@@ -16,7 +17,8 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 
 // Connect to broker, publish message to a topic and then disconnect
 const publish = (topic, data) => new Promise((resolve, reject) => {
-  const client = new AWSMqttClient({
+  const client = AWSMqtt.connect({
+    WebSocket: WebSocket,
     region: AWS.config.region,
     credentials: AWS.config.credentials,
     endpoint: config.aws.iot.endpoint,

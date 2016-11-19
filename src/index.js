@@ -1,9 +1,10 @@
-import BrowserClient from './BrowserClient'
-import ServerClient from './ServerClient'
+import Client from './Client'
 import createWebSocketStream from './createWebSocketStream'
 
+const connect = (options) => new Client(options)
+
 module.exports = {
-  ServerClient,
-  BrowserClient,
+  Client,
+  connect,
   createWebSocketStream
 }

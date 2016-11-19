@@ -1,6 +1,5 @@
-// TODO: Something like this should make a smaller bundle? var S3 = require('aws-sdk/clients/s3');
 import AWS from 'aws-sdk/global'
-import AWSMqttClient from '../../../lib/BrowserClient'
+import AWSMqtt from '../../../lib/index'
 import config from '../../config' // NOTE: make sure to copy config.example.js to config.js and fill in your values
 import {logEventsToConsole} from './utils'
 
@@ -10,7 +9,8 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
   IdentityPoolId: config.aws.cognito.identityPoolId
 })
 
-const client = new AWSMqttClient({
+const client = AWSMqtt.connect({
+  WebSocket: window.WebSocket,
   region: AWS.config.region,
   credentials: AWS.config.credentials,
   endpoint: config.aws.iot.endpoint,
@@ -18,12 +18,12 @@ const client = new AWSMqttClient({
 })
 
 client.on('connect', () => {
-  addLogEntry('Successfully connected to AWS IoT Broker!  :-)')
+  addLogEntry('Successfully connected to AWS MQTT Broker!  :-)')
   client.subscribe(config.topics.time)
   client.subscribe(config.topics.chat)
 })
 client.on('message', (topic, message) => {
-  addLogEntry(`Incoming message from ${topic}: ${message}`)
+  addLogEntry(`${topic} => ${message}`)
 })
 client.on('close', () => {
   addLogEntry('Closed  :-(')

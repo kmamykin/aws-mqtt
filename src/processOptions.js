@@ -1,5 +1,6 @@
 export default (options = {}) => {
   return {
+    WebSocket: options.WebSocket || window.WebSocket,
     aws: {
       region: options.region,
       endpoint: options.endpoint,
