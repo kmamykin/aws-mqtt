@@ -1,14 +1,18 @@
 {
   "name": "aws-mqtt",
   "version": "0.1.0",
-  "description": "",
+  "description": "AWS MQTT client",
   "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kmamykin/mqtt-websocket-stream.git"
+  },
   "scripts": {
     "compile": "rm -rf lib && babel --presets es2015 -d lib src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Kliment Mamykin <kmamyk@gmail.com>",
+  "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.16.0",
     "babel-preset-es2015": "^6.16.0"
