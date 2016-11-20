@@ -4,11 +4,11 @@
 
 This module implements a client to connect to AWS IoT MQTT broker using WebSockets. 
 It can be used to create serverless realtime applications that elastically scale with demand.
-AWS MQTT Client can used in browser as well as in node.js environment.  
+AWS MQTT Client can be used in browser as well as in node.js environment.  
 
 Up until now an implementation of a realtime in-browser application required the use of either an external service 
-(such as [Pusher](https://pusher.com/), [PubNub](https://www.pubnub.com/) and such)
-or roll your own servers (e.g. using socket.io) that maintain connections with connected browsers and need scaling to respond to the changes in traffic.
+(e.g [Pusher](https://pusher.com/), [PubNub](https://www.pubnub.com/))
+or roll your own servers (e.g. using [socket.io](http://socket.io/)) that maintain connections with browsers and need scaling to respond to the changes in number of active users.
 Using AWS IoT MQTT broker as the realtime backend provides a low cost automatically scaled service for your application. 
 
 ### Disclaimer
