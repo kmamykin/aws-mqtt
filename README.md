@@ -142,20 +142,20 @@ An example of policy statement for an un-authenticated user (tweak as you see fi
 
 Create a Cognito Identity Pool in AWS 
 
-![Image of Step1](https://github.com/kmamykin/aws-mqtt/tree/master/examples/IdentityPoolStep1.jpg)
+![Image of Step1](https://github.com/kmamykin/aws-mqtt/raw/master/examples/IdentityPoolStep1.jpg)
 
 Accept default create IAM roles for authenticated and un-authenticated identities 
  
-![Image of Step2](https://github.com/kmamykin/aws-mqtt/tree/master/examples/IdentityPoolStep2.jpg)
+![Image of Step2](https://github.com/kmamykin/aws-mqtt/raw/master/examples/IdentityPoolStep2.jpg)
 
 Go to IAM Roles and find the role for the *un-authenticated* role created for the identity pool
  
-![Image of Step3](https://github.com/kmamykin/aws-mqtt/tree/master/examples/IdentityPoolStep3.jpg)
+![Image of Step3](https://github.com/kmamykin/aws-mqtt/raw/master/examples/IdentityPoolStep3.jpg)
  
 Edit the inline policy to allow access to connect, subscribe and publish to IoT message broker. 
 Note: the policy shown below is very open for an un-authenticated user, you can start with that to make sure things work, and then tighten it up.
  
-![Image of Step4](https://github.com/kmamykin/aws-mqtt/tree/master/examples/IdentityPoolStep4.jpg)
+![Image of Step4](https://github.com/kmamykin/aws-mqtt/raw/master/examples/IdentityPoolStep4.jpg)
 
 Get the Identity Pool ID you just created:
 
