@@ -140,7 +140,7 @@ An example of policy statement for an un-authenticated user (tweak as you see fi
 
 ### Quick example using Cognito Identity un-authenticated users approach 
 
-Create a Cognito Identity Pool in AWS 
+Create a Cognito Identity Pool in AWS (under Cognito Federated Identities)
 
 ![Image of Step1](https://github.com/kmamykin/aws-mqtt/raw/master/examples/IdentityPoolStep1.jpg)
 
