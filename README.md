@@ -182,3 +182,5 @@ In `./examples` folder there are two example projects:
 * node-publisher - contains two examples
     1. timePublisher.js - how to connect to AWS IoT MQTT broker, subscribe and publish messages
     2. publish.js - how to publish one message and disconnect, e.g. `node publish.js "/chat" Hello`
+
+Before running any of the examples, copy `examples/config.example.js` to `examples/config.js` and fill in your values.
