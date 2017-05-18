@@ -181,4 +181,4 @@ In `./examples` folder there are two example projects:
 * chat - The minimalistic example of using AWSMqtt in browser with Webpack
 * node-publisher - contains two examples
     1. timePublisher.js - how to connect to AWS IoT MQTT broker, subscribe and publish messages
-    2. publish.js - how to publish one message and disconnect
+    2. publish.js - how to publish one message and disconnect, e.g. `node publish.js "/chat" Hello`
