@@ -138,12 +138,47 @@ An example of policy statement for an un-authenticated user (tweak as you see fi
 }
 ```
 
+### Quick example using Cognito Identity un-authenticated users approach 
 
-One of the options that needs to be passed to AWSMqtt connect methods is credentials.  
+Create a Cognito Identity Pool in AWS 
+
+![Image of Step1](https://github.com/kmamykin/aws-mqtt/tree/master/examples/IdentityPoolStep1.jpg)
+
+Accept default create IAM roles for authenticated and un-authenticated identities 
+ 
+![Image of Step2](https://github.com/kmamykin/aws-mqtt/tree/master/examples/IdentityPoolStep2.jpg)
+
+Go to IAM Roles and find the role for the *un-authenticated* role created for the identity pool
+ 
+![Image of Step3](https://github.com/kmamykin/aws-mqtt/tree/master/examples/IdentityPoolStep3.jpg)
+ 
+Edit the inline policy to allow access to connect, subscribe and publish to IoT message broker. 
+Note: the policy shown below is very open for an un-authenticated user, you can start with that to make sure things work, and then tighten it up.
+ 
+![Image of Step4](https://github.com/kmamykin/aws-mqtt/tree/master/examples/IdentityPoolStep4.jpg)
+
+Get the Identity Pool ID you just created:
+
+```bash
+aws cognito-identity list-identity-pools --max-results=5
+```
+
+Use the Identity Pool ID in you app credentials:
+
+```javascript
+AWS.config.region = config.aws.region
+AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+  IdentityPoolId: '...'
+})
+```
+
+Pass `AWS.config.credentials` to AWSMqtt connect methods.  
+
 ## Examples
 
 In `./examples` folder there are two example projects: 
-    * chat - The minimalistic example of using AWSMqtt in browser with Webpack
-    * node-publisher - contains two examples
-        1. timePublisher.js - how to connect to AWS IoT MQTT broker, subscribe and publish messages
-        2. publish.js - how to publish one message and disconnect
+
+* chat - The minimalistic example of using AWSMqtt in browser with Webpack
+* node-publisher - contains two examples
+    1. timePublisher.js - how to connect to AWS IoT MQTT broker, subscribe and publish messages
+    2. publish.js - how to publish one message and disconnect
