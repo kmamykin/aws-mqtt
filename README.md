@@ -166,7 +166,7 @@ aws cognito-identity list-identity-pools --max-results=5
 Use the Identity Pool ID in you app credentials:
 
 ```javascript
-AWS.config.region = config.aws.region
+AWS.config.region = '...' // e.g us-west-2
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
   IdentityPoolId: '...'
 })
