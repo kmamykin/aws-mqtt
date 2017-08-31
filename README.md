@@ -184,3 +184,16 @@ In `./examples` folder there are two example projects:
     2. publish.js - how to publish one message and disconnect, e.g. `node publish.js "/chat" Hello`
 
 Before running any of the examples, copy `examples/config.example.js` to `examples/config.js` and fill in your values.
+
+## Frequently asked questions
+
+#### Memory leak
+
+If your browser is reporting a memory leak, this could be caused by your cleanup strategy of event listeners.  By default, most browsers allow 10 event listeners to listen to a single emitting event from a singular source.  So, if you have more than 10 listeners for an event (ie `client.on('message')`, where `message` is the event), then you will get this error.  If your client is disconnecting, or reconnecting, we recommend that you cleanup the old event listeners with `client.removeAllListeners('EVENT')` (where EVENT could be `message`, or other), or `client.removeListener('EVENT', fn)`.
+
+#### Frequently disconnecting
+
+There are a few reasons why your client may be disconnecting unexpectedly.  Here are a few cases:
+
+- `clientId` in the `connect` configuration MUST be unique across each client.  If clients A and B use the same clientId, then when B tries to connect, client A will get disconnected (by the broker).  Because this package attempts to reconnect you when disconnected, client A will reconnect, which will cause client B to disconnect.  And an infinite cycle ensues.  Note that `clientId`, if not passed in the config, will use `'mqtt-client-' + (Math.floor((Math.random() * 100000) + 1))` to generate a "unique" clientId.  If you are passing in clientId to override the default, make sure it is unique.
+- Permissions with AWS IAM could be set up incorrectly.
