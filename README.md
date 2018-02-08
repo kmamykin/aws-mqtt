@@ -42,6 +42,12 @@ const client = AWSMqtt.connect({
   credentials: AWS.config.credentials,
   endpoint: '...iot.us-east-1.amazonaws.com', // NOTE: get this value with `aws iot describe-endpoint`
   clientId: 'mqtt-client-' + (Math.floor((Math.random() * 100000) + 1)), // clientId to register with MQTT broker. Need to be unique per client
+  will: {
+      topic: 'WillMsg',
+      payload: 'Connection Closed abnormally..!',
+      qos: 0,
+      retain: false
+  } 
 })
 
 client.on('connect', () => {
@@ -80,13 +86,22 @@ const client = AWSMqtt.connect({
   credentials: AWS.config.credentials,
   endpoint: '...iot.us-east-1.amazonaws.com', // NOTE: get this value with `aws iot describe-endpoint`
   clientId: 'mqtt-client-' + (Math.floor((Math.random() * 100000) + 1)), // clientId to register with MQTT broker. Need to be unique per client
+  will: {
+    topic: 'WillMsg',
+    payload: 'Connection Closed abnormally..!',
+    qos: 0,
+    retain: false
+  } 
 })
 
 ```
 
 Note, that `AWSMqtt.connect`, the returns MqttClient, which sets up internal timers and the node.js instance will not exit until you call `client.end()`.
 This is fine if you are developing a *long running* server app that subscribes and/or publishes messages.
-For ephemeral functions, such as AWS Lambda, this approach will cause the function invocation to timeout. 
+For ephemeral functions, such as AWS Lambda, this approach will cause the function invocation to timeout.
+The `will` option will send a message by the broker automatically when the client disconnect badly. 
+For more information of how to use it, look the [mqtt.Client](https://github.com/mqttjs/MQTT.js#mqttclientstreambuilder-options) 
+option on the [MQTT.js](https://github.com/mqttjs/MQTT.js) documentation.
 
 To publish a message to a topic - create a publish function through `AWSMqtt.publisher` invocation and call it with topic and message:
 

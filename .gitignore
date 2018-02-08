@@ -1,2 +1,6 @@
+# Lib files
 /lib
 node_modules
+
+#IDE files
+.idea/
