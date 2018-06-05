@@ -1,6 +1,9 @@
 import v4 from 'aws-signature-v4'
 import crypto from 'crypto'
 
+const hasProtocol = (endpoint) => 
+  new RegExp("^wss?://").test(endpoint)
+
 export default ({ region, endpoint, credentials }) => {
   const sign = ({ credentials, expiration }) => {
     let url = v4.createPresignedURL(
@@ -22,14 +25,24 @@ export default ({ region, endpoint, credentials }) => {
     }
     return url
   }
+  
+  // This method is used when you don't pass in credentials
+  const unsignedUrl = () => {
+    const url = `${endpoint}/mqtt`
+    return hasProtocol(url) 
+      ? url 
+      : `wss://${url}`
+  }
 
   return {
     getAndSign: ({ expiration = 15 }, callback) => {
-      credentials.get((err) => {
-        if (err) return callback(err)
-        const url = sign({credentials, expiration})
-        callback(null, url)
-      })
+      credentials 
+        ? credentials.get((err) => {
+            if (err) return callback(err)
+            const url = sign({credentials, expiration})
+            callback(null, url)
+          })
+        : callback(null, unsignedUrl())
     }
   }
 }
