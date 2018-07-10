@@ -24,6 +24,7 @@
   },
   "scripts": {
     "compile": "rm -rf lib && babel --presets es2015 -d lib src",
+    "watch": "babel --watch --presets es2015 -d lib src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
