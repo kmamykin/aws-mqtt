@@ -144,11 +144,11 @@ An example of policy statement for an un-authenticated user (tweak as you see fi
     }, {
         "Effect": "Allow",
         "Action":["iot:Subscribe"],
-        "Resource": ["arn:aws:iot:us-east-1:123456789012:topic/foo/bar"]
+        "Resource": ["arn:aws:iot:us-east-1:<...>:topic/foo/bar"]
     }, {
         "Effect": "Allow",
         "Action": ["iot:Publish"],
-        "Resource": ["arn:aws:iot:us-east-1:123456789012:topic/foo/bar/${iot:ClientId}"]
+        "Resource": ["arn:aws:iot:us-east-1:<...>:topic/foo/bar/${iot:ClientId}"]
     }]
 }
 ```
