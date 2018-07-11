@@ -37,6 +37,6 @@
     "mqtt-websocket-stream": "^0.1.0"
   },
   "peerDependencies": {
-    "aws-sdk": "^2.6.3"
+    "aws-sdk": "^2.0.0"
   }
 }
