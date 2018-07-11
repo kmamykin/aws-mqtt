@@ -77,9 +77,9 @@ aws-sign2@~0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/aws-sign2/-/aws-sign2-0.6.0.tgz#14342dd38dbcc94d0e5b87d763cd63612c0e794f"
 
-aws-signature-v4@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/aws-signature-v4/-/aws-signature-v4-1.0.1.tgz#e48f30017b756b78288f367d7c3d9df5d4bf1d75"
+aws-signature-v4@1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/aws-signature-v4/-/aws-signature-v4-1.2.1.tgz#5c910c28d304af14511a599d1f8df17c433b3b55"
 
 aws4@^1.2.1:
   version "1.6.0"

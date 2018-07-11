@@ -2,7 +2,7 @@ import v4 from 'aws-signature-v4'
 import crypto from 'crypto'
 
 export default ({ region, endpoint, credentials }) => {
-  const sign = ({ credentials, expiration }) => {
+  const sign = ({ credentials, expires }) => {
     let url = v4.createPresignedURL(
       'GET',
       endpoint,
@@ -12,22 +12,21 @@ export default ({ region, endpoint, credentials }) => {
       {
         key: credentials.accessKeyId,
         secret: credentials.secretAccessKey,
-        region,
-        expiration,
-        protocol: 'wss'
+        sessionToken: credentials.sessionToken,
+        protocol: 'wss',
+        region: region,
+        expires: expires
       }
     )
-    if (credentials.sessionToken) {
-      url += '&X-Amz-Security-Token=' + encodeURIComponent(credentials.sessionToken)
-    }
     return url
   }
 
   return {
-    getAndSign: ({ expiration = 15 }, callback) => {
+    getAndSign: (callback) => {
+      const expires = 60 // seconds
       credentials.get((err) => {
         if (err) return callback(err)
-        const url = sign({credentials, expiration})
+        const url = sign({ credentials, expires })
         callback(null, url)
       })
     }
