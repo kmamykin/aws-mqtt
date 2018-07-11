@@ -1,6 +1,7 @@
 # Lib files
 /lib
 node_modules
+yarn-error.log
 
 #IDE files
 .idea/
