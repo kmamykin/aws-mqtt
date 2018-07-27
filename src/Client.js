@@ -1,5 +1,5 @@
 import MqttClient from 'mqtt/lib/client'
-import createWebSocketStream from './createWebSocketStream'
+import { sign } from './urlSigner'
 
 // Not all MQTT options will work with AWS, here we handpick options that are safe to pass on to MQTT
 const processOptions = (options = {}) => {
