@@ -1,7 +1,7 @@
 import AWS from 'aws-sdk/global'
 import AWSMqtt from '../../../lib/index'
 import config from '../../config' // NOTE: make sure to copy config.example.js to config.js and fill in your values
-import {logEventsToConsole} from './utils'
+import { logEventsToConsole } from './utils'
 
 // Initialize the Amazon Cognito credentials provider
 AWS.config.region = config.aws.region
@@ -17,6 +17,8 @@ const client = AWSMqtt.connect({
   clientId: 'mqtt-client-' + (Math.floor((Math.random() * 100000) + 1)),
 })
 
+logEventsToConsole(client)
+
 client.on('connect', () => {
   addLogEntry('Successfully connected to AWS MQTT Broker!  :-)')
   client.subscribe(config.topics.time)
@@ -31,8 +33,6 @@ client.on('close', () => {
 client.on('offline', () => {
   addLogEntry('Went offline  :-(')
 })
-
-logEventsToConsole(client)
 
 document.getElementById('send').addEventListener('click', () => {
   const message = document.getElementById('message').value
