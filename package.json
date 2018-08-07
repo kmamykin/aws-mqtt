@@ -25,19 +25,21 @@
   "scripts": {
     "compile": "rm -rf lib && babel -d lib src",
     "watch": "babel --watch -d lib src",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --detectOpenHandles"
   },
   "devDependencies": {
+    "aws-sdk": "^2.0.0",
     "babel-cli": "^6.16.0",
     "babel-preset-es2015": "^6.16.0",
-    "babel-preset-stage-2": "^6.13.0"
+    "babel-preset-stage-2": "^6.13.0",
+    "jest": "^23.4.2",
+    "websocket-stream": "^5.1.2",
+    "ws": "^6.0.0"
   },
   "dependencies": {
     "aws-signature-v4": "1.2.1",
     "mqtt": "2.18.2",
     "mqtt-websocket-stream": "^0.1.3"
   },
-  "peerDependencies": {
-    "aws-sdk": "^2.0.0"
-  }
+  "peerDependencies": {}
 }
