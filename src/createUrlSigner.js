@@ -13,7 +13,7 @@ export default ({ region, endpoint, credentials }) => {
         key: credentials.accessKeyId,
         secret: credentials.secretAccessKey,
         region,
-        expiration,
+        expires: expiration,
         protocol: 'wss'
       }
     )
