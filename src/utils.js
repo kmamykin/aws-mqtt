@@ -1,7 +1,7 @@
-export const toAsyncFactory = (socketOrFactory) => {
-  const continueWithError = (error) => (callback) => process.nextTick(() => callback(error))
-  const continueWithValue = (value) => (callback) => process.nextTick(() => callback(null, value))
-  const invalidArgsError = new Error("Must call createStream with a socket or factory function")
+export const toAsyncFactory = socketOrFactory => {
+  const continueWithError = error => callback => process.nextTick(() => callback(error))
+  const continueWithValue = value => callback => process.nextTick(() => callback(null, value))
+  const invalidArgsError = new Error('Must call createStream with a socket or factory function')
   if (!socketOrFactory) return continueWithError(invalidArgsError)
   if (typeof socketOrFactory === 'object') return continueWithValue(socketOrFactory)
   if (typeof socketOrFactory === 'function' && socketOrFactory.length === 0) return continueWithValue(socketOrFactory()) // for sync functions
@@ -9,15 +9,15 @@ export const toAsyncFactory = (socketOrFactory) => {
   return continueWithError(invalidArgsError)
 }
 
-export const concatChunks = (chunks) => {
+export const concatChunks = chunks => {
   //chunks ::  [{ chunk: ..., encoding: ... }]
   const toBuffer = (chunk, encoding) => (encoding === 'utf8' ? Buffer.from(chunk, 'utf8') : chunk)
   const buffers = chunks.map(c => toBuffer(c.chunk, c.encoding))
   return Buffer.concat(buffers)
 }
 
-export const isBrowserSocket = (socket) => {
-  return socket.send.length != 3; // send is sync in browser and async with length 3 on server using 'ws' module
+export const isBrowserSocket = socket => {
+  return socket.send.length != 3 // send is sync in browser and async with length 3 on server using 'ws' module
 }
 
 export const initWebSocket = (stream, socket) => {
@@ -37,16 +37,16 @@ export const initWebSocket = (stream, socket) => {
     // console.log('REQ', req.method, req.path, req._headers)
     // console.log('RES HEADERS', res.headers)
     let data = ''
-    res.on('data', (chunk) => {
+    res.on('data', chunk => {
       // console.log('CHUNK' + chunk);
       data = data + chunk
-    });
+    })
     res.on('end', () => {
       // console.log('End of response.');
       const err = new Error('Unexpected server response: ' + res.statusCode)
       err.body = data
       closeStreamWithError(stream, err)
-    });
+    })
   })
 
   stream.on('finish', streamFinishHandler(socket))
@@ -66,7 +66,7 @@ const openHandler = stream => evt => {
 
 // See https://tools.ietf.org/html/rfc6455#section-7.4.1
 const statusCodes = {
-  1006: 'Connection was closed abnormally'
+  1006: 'Connection was closed abnormally',
 }
 
 const closeHandler = stream => evt => {
@@ -84,7 +84,6 @@ const closeHandler = stream => evt => {
   stream.emit('close') // as a Readable, when socket is closed, indicate to consumers no more data is coming
 }
 
-
 const errorHandler = stream => evt => {
   const err = evt.error || evt // ws.WebSocket has evt.error, native WebSocket emits an error
   // console.log('WebSocketStream onerror', JSON.stringify(evt), evt instanceof ErrorEvent, evt.colno, evt.error, evt.message)
@@ -92,7 +91,7 @@ const errorHandler = stream => evt => {
 }
 
 const messageHandler = stream => {
-  const toBuffer = (b) => (Buffer.isBuffer(b)) ? b : new Buffer(b)
+  const toBuffer = b => (Buffer.isBuffer(b) ? b : new Buffer(b))
 
   return evt => {
     // console.log('WebSocketStream onmessage', evt.data)

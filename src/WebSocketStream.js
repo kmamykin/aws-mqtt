@@ -1,5 +1,5 @@
-import {Duplex} from 'stream'
-import {toAsyncFactory, isBrowserSocket, closeStreamWithError, initWebSocket, concatChunks} from './utils'
+import { Duplex } from 'stream'
+import { toAsyncFactory, isBrowserSocket, closeStreamWithError, initWebSocket, concatChunks } from './utils'
 
 class WebSocketStream extends Duplex {
   constructor(socketOrFactory) {
@@ -56,7 +56,7 @@ const sendBufferTask = (stream, buffer, callback) => () => {
     case socket.CONNECTING:
       // queue up until socket is opened and flushed
       setTimeout(sendBufferTask(stream, buffer, callback), A_BIT_LATER)
-      break;
+      break
     case socket.OPEN:
       // determine if we are dealing with browser version of socket.send (sync) or ws version of socket.send (async)
       if (isBrowserSocket(socket)) {
@@ -82,15 +82,15 @@ const sendBufferTask = (stream, buffer, callback) => () => {
         // console.log('we are on a server, using ws.WebSocket', buffer)
         return socket.send(buffer, { mask: true, binary: true }, callback)
       }
-      break;
+      break
     case socket.CLOSING:
       // Oops, can't write to closing socket. Discard the buffer.
-      callback(new Error("Socket is closing"))
-      break;
+      callback(new Error('Socket is closing'))
+      break
     case socket.CLOSED:
       // Oops, can't write to closed socket. Discard the buffer.
-      callback(new Error("Socket is closed"))
-      break;
+      callback(new Error('Socket is closed'))
+      break
     default:
     //
   }
