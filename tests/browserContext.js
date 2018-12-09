@@ -1,3 +1,4 @@
+// Helper function for testing pages with puppeteer
 import webpack from 'webpack'
 import puppeteer from 'puppeteer'
 
@@ -66,7 +67,7 @@ const wrapPage = page => {
     },
   }
 }
-export default (appDir) => {
+export default appDir => {
   let browser = null
   const indexPage = `file://${path.resolve(path.join(__dirname, appDir, 'index.html'))}`
 
@@ -74,7 +75,7 @@ export default (appDir) => {
     start: async () => {
       await compileApp(appDir)
       browser = await puppeteer.launch({
-        ignoreHTTPSErrors: true
+        ignoreHTTPSErrors: true,
       })
     },
     shutdown: async () => {

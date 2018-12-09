@@ -25,8 +25,8 @@ describe('WebSocket compatibility', () => {
         done(new Error('Should have failed here'))
       })
       request.on('error', function(err) {
-        expect(err.message).toMatch(/ENOTSOCK/)
         request.abort()
+        expect(err.message).toMatch(/ENOTSOCK/)
         done()
       })
     })
@@ -54,7 +54,6 @@ describe('WebSocket compatibility', () => {
     test('with createConnection option', done => {
       const socket = new websocket('wss://echo.websocket.org/', [], {})
       socket.on('upgrade', res => {
-        // console.log(res.headers)
         res.destroy()
         done()
       })

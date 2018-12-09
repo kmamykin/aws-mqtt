@@ -1,6 +1,4 @@
-import puppeteer from 'puppeteer'
 import browserContext from './browserContext'
-import path from 'path'
 import config from '../examples/config' // NOTE: make sure to copy config.example.js to config.js and fill in your values
 
 jest.setTimeout(20000)
