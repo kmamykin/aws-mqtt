@@ -1,8 +1,7 @@
-import AWSMqttClient from '../src'
+import AWSMqttClient from '../src/NodeClient'
 import AWS from 'aws-sdk/global'
 import config from '../examples/config' // NOTE: make sure to copy config.example.js to config.js and fill in your values
 import { logEventsToConsole } from './utils'
-import WebSocket from 'ws'
 
 // Initialize the Amazon Cognito credentials provider
 AWS.config.region = config.aws.region
@@ -22,8 +21,7 @@ describe('AwsMqttClient', () => {
 
   describe('connection to AWS MQTT broker', () => {
     test.skip('Problem: MQTT still has something handing preventing jest test to complete', done => {
-      client = AWSMqttClient.connect({
-        WebSocket: WebSocket,
+      client = new AWSMqttClient({
         region: AWS.config.region + '1',
         credentials: AWS.config.credentials,
         endpoint: config.aws.iot.endpoint,
@@ -43,8 +41,7 @@ describe('AwsMqttClient', () => {
       })
     })
     test('successfully connects', done => {
-      client = AWSMqttClient.connect({
-        WebSocket: WebSocket,
+      client = new AWSMqttClient({
         region: AWS.config.region,
         credentials: AWS.config.credentials,
         endpoint: config.aws.iot.endpoint,

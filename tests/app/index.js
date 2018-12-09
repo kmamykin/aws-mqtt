@@ -1,10 +1,10 @@
 const AWS = require('aws-sdk/global')
-const AWSMqtt = require('../../lib/index')
+const AWSMqttClient = require('../../lib/BrowserClient')
 const config = require('../../examples/config')
 
 // exposing globals on window to be accessed in tests (in page.evaluate(() => { window.AWS })
 window.AWS = AWS
-window.AWSMqtt = AWSMqtt
+window.AWSMqttClient = AWSMqttClient.default
 window.config = config
 
 window.guestIdentityOptions = (options = {}) => {

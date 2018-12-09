@@ -1,7 +1,7 @@
 const crypto = require('crypto')
 const https = require('https')
 const tls = require('tls')
-const websocket = require('ws')
+const WS = require('ws')
 
 import { sign } from '../src/urlSigner'
 import AWS from 'aws-sdk/global'
@@ -52,7 +52,7 @@ describe('WebSocket compatibility', () => {
 
   describe('WebSocket connection to echo server', () => {
     test('with createConnection option', done => {
-      const socket = new websocket('wss://echo.websocket.org/', [], {})
+      const socket = new WS('wss://echo.websocket.org/', [], {})
       socket.on('upgrade', res => {
         res.destroy()
         done()
@@ -65,7 +65,7 @@ describe('WebSocket compatibility', () => {
 
   describe('WebSocket connection to AWS MQTT server', () => {
     test('with no options (createConnection: tls.connect used by ws.WebSocket internally) connection fails', done => {
-      const socket = new websocket(awsMqttUrl(), ['mqtt'], {})
+      const socket = new WS(awsMqttUrl(), ['mqtt'], {})
       socket.on('upgrade', res => {
         res.destroy()
         done(new Error('Expected to fail connection'))
@@ -77,7 +77,7 @@ describe('WebSocket compatibility', () => {
     })
     test('with agent option succeeds', done => {
       const agent = new https.Agent()
-      const socket = new websocket(awsMqttUrl(), ['mqtt'], { agent })
+      const socket = new WS(awsMqttUrl(), ['mqtt'], { agent })
       socket.on('upgrade', res => {
         res.destroy()
         done()

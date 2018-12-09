@@ -1,8 +1,9 @@
-import Client, { connect } from './Client'
-import publisher from './publisher'
+import BrowserClient from './BrowserClient'
+import NodeClient from './NodeClient'
+import createPublisher from './createPublisher'
 
 module.exports = {
-  Client,
-  connect,
-  publisher,
+  BrowserClient,
+  NodeClient,
+  createPublisher,
 }

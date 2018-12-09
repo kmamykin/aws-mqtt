@@ -1,9 +1,9 @@
-import Client from './Client'
+import NodeClient from './NodeClient'
 
 // Connect to broker, publish message to a topic and then disconnect
-const publisher = options => (topic, message) =>
+export default options => (topic, message) =>
   new Promise((resolve, reject) => {
-    const client = new Client(options)
+    const client = new NodeClient(options)
 
     client.once('connect', () => {
       client.publish(topic, message, {}, err => {
@@ -25,5 +25,3 @@ const publisher = options => (topic, message) =>
       reject(new Error('MQTT went offline'))
     })
   })
-
-module.exports = publisher

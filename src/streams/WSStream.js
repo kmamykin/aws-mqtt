@@ -1,7 +1,7 @@
 import { Duplex } from 'stream'
 import { toAsyncFactory, isBrowserSocket, closeStreamWithError, initWebSocket, concatChunks } from './utils'
 
-class WebSocketStream extends Duplex {
+class WSStream extends Duplex {
   constructor(socketOrFactory) {
     super()
     this.socket = null
@@ -17,7 +17,7 @@ class WebSocketStream extends Duplex {
     })
   }
 
-  // mqtt.js call write with these values (examples):
+  // mqtt.js calls write with these values (examples):
   // chunk = [16], enc = "buffer"
   // chunk = "MQTT", enc = "utf8"
   _write(chunk, encoding, callback) {
@@ -96,4 +96,4 @@ const sendBufferTask = (stream, buffer, callback) => () => {
   }
 }
 
-module.exports = WebSocketStream
+module.exports = WSStream

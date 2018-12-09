@@ -33,7 +33,7 @@ describe('browser', () => {
       const connack = await page.evaluate(
         () =>
           new Promise(resolve => {
-            const client = AWSMqtt.connect(guestIdentityOptions())
+            const client = new AWSMqttClient(guestIdentityOptions())
             client.on('connect', connack => {
               client.end(() => {
                 resolve(connack)
@@ -61,7 +61,7 @@ describe('browser', () => {
       const errorMessage = await page.evaluate(
         () =>
           new Promise(resolve => {
-            const client = AWSMqtt.connect(guestIdentityOptions())
+            const client = new AWSMqttClient(guestIdentityOptions())
             logEventsToConsole(client)
             client.on('error', err => {
               resolve(err.message)
@@ -77,7 +77,7 @@ describe('browser', () => {
       const errorMessage = await page.evaluate(
         () =>
           new Promise(resolve => {
-            const client = AWSMqtt.connect(invalidIdentityPoolOptions())
+            const client = new AWSMqttClient(invalidIdentityPoolOptions())
             logEventsToConsole(client)
             client.on('error', err => {
               resolve(err.message)
@@ -93,7 +93,7 @@ describe('browser', () => {
       const errorMessage = await page.evaluate(
         () =>
           new Promise(resolve => {
-            const client = AWSMqtt.connect(invalidCredentialsOptions())
+            const client = new AWSMqttClient(invalidCredentialsOptions())
             logEventsToConsole(client)
             client.on('error', err => {
               resolve(err.message)
