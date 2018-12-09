@@ -1,0 +1,12 @@
+{
+  "presets": [
+    ["env", {
+      "targets": {
+        "chrome": 68,
+        "node": "current"
+      },
+      "modules": "commonjs",
+      "debug": true
+    }]
+  ]
+}

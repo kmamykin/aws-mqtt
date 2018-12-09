@@ -2,6 +2,6 @@
 /lib
 node_modules
 yarn-error.log
-
+/dist
 #IDE files
 .idea/

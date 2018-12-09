@@ -4,5 +4,5 @@ import publisher from './publisher'
 module.exports = {
   Client,
   connect,
-  publisher
+  publisher,
 }

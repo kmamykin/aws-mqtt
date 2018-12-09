@@ -14,7 +14,8 @@ const client = AWSMqtt.connect({
   region: AWS.config.region,
   credentials: AWS.config.credentials,
   endpoint: config.aws.iot.endpoint,
-  clientId: 'mqtt-client-' + (Math.floor((Math.random() * 100000) + 1)),
+  // clientId: 'mqtt-client-' + (Math.floor((Math.random() * 100000) + 1)),
+  clientId: 'mqtt-client-browser',
 })
 
 logEventsToConsole(client)
@@ -23,6 +24,7 @@ client.on('connect', () => {
   addLogEntry('Successfully connected to AWS MQTT Broker!  :-)')
   client.subscribe(config.topics.time)
   client.subscribe(config.topics.chat)
+  client.subscribe('$aws/events/presence/connected/mqtt-client-test')
 })
 client.on('message', (topic, message) => {
   addLogEntry(`${topic} => ${message}`)
