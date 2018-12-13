@@ -51,7 +51,7 @@ window.invalidCredentialsOptions = (options = {}) => {
   }
 }
 
-window.logEventsToConsole = client => {
+window.withConsoleLogging = client => {
   client.on('connect', connack =>
     console.log('CONNECT', JSON.stringify(connack))
   )
@@ -71,4 +71,5 @@ window.logEventsToConsole = client => {
   client.on('packetreceive', packet =>
     console.log('PACKETRECV', JSON.stringify(packet))
   )
+  return client
 }
