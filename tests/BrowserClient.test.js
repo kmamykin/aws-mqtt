@@ -12,86 +12,79 @@ describe('browser', () => {
 
   test(
     'browser loaded the same config file',
-    browser.evaluate(() => new Promise(resolve => resolve(window.config))).check(browserConfig => {
+    browser.withPage(async page => {
+      const browserConfig = await page.evaluate(() => new Promise(resolve => resolve(window.config)))
       expect(browserConfig).toEqual(config)
     })
   )
   test(
     'successful connection to AWS',
-    browser
-      .evaluate(
-        () =>
-          new Promise(resolve => {
-            const client = withConsoleLogging(new AWSMqttClient(guestIdentityOptions()))
-            client.on('connect', connack => {
-              client.end(() => {
-                resolve(connack)
-              })
+    browser.withPage(async page => {
+      const connack = await page.evaluate(() => {
+        return new Promise(resolve => {
+          const client = withConsoleLogging(new AWSMqttClient(guestIdentityOptions()))
+          client.on('connect', connack => {
+            client.end(() => {
+              resolve(connack)
             })
           })
-      )
-      .check(connack => {
-        expect(connack).toMatchObject({
-          cmd: 'connack',
-          dup: false,
-          length: 2,
-          payload: null,
-          qos: 0,
-          retain: false,
-          returnCode: 0,
-          sessionPresent: false,
-          topic: null,
         })
       })
+      expect(connack).toMatchObject({
+        cmd: 'connack',
+        dup: false,
+        length: 2,
+        payload: null,
+        qos: 0,
+        retain: false,
+        returnCode: 0,
+        sessionPresent: false,
+        topic: null,
+      })
+    })
   )
   test(
     'connecting in offline mode emits network failure error',
-    browser
-      .init(page => page.setOfflineMode(true))
-      .evaluate(
-        () =>
-          new Promise(resolve => {
-            const client = withConsoleLogging(new AWSMqttClient(guestIdentityOptions()))
-            client.on('error', err => {
-              resolve(err.message)
-            })
+    browser.withPage(async page => {
+      page.setOfflineMode(true)
+      const errorMessage = await page.evaluate(() => {
+        return new Promise(resolve => {
+          const client = withConsoleLogging(new AWSMqttClient(guestIdentityOptions()))
+          client.on('error', err => {
+            resolve(err.message)
           })
-      )
-      .check(errorMessage => {
-        expect(errorMessage).toEqual('Network Failure')
+        })
       })
+      expect(errorMessage).toEqual('Network Failure')
+    })
   )
   test(
     'connecting with invalid identity pool url emits pool not found error',
-    browser
-      .evaluate(
-        () =>
-          new Promise(resolve => {
-            const client = withConsoleLogging(new AWSMqttClient(invalidIdentityPoolOptions()))
-            client.on('error', err => {
-              resolve(err.message)
-            })
+    browser.withPage(async page => {
+      const errorMessage = await page.evaluate(() => {
+        return new Promise(resolve => {
+          const client = withConsoleLogging(new AWSMqttClient(invalidIdentityPoolOptions()))
+          client.on('error', err => {
+            resolve(err.message)
           })
-      )
-      .check(errorMessage => {
-        expect(errorMessage).toMatch(/IdentityPool .* not found/)
+        })
       })
+      expect(errorMessage).toMatch(/IdentityPool .* not found/)
+    })
   )
   test(
     'connecting with invalid credentials emits connection closed error',
-    browser
-      .evaluate(
-        () =>
-          new Promise(resolve => {
-            const client = withConsoleLogging(new AWSMqttClient(invalidCredentialsOptions()))
-            client.on('error', err => {
-              resolve(err.message)
-            })
+    browser.withPage(async (page, consoleEntries) => {
+      const connectionError = await page.evaluate(() => {
+        return new Promise(resolve => {
+          const client = withConsoleLogging(new AWSMqttClient(invalidCredentialsOptions()))
+          client.on('error', err => {
+            resolve(err.message)
           })
-      )
-      .check((errorMessage, logs) => {
-        expect(errorMessage).toMatch(/Connection was closed abnormally/)
-        expect(logs[0].text).toMatch(/WebSocket connection to .* failed: Error during WebSocket handshake: Unexpected response code: 403/)
+        })
       })
+      expect(connectionError).toMatch(/Connection was closed abnormally/)
+      expect(consoleEntries(0).text).toMatch(/WebSocket connection to .* failed: Error during WebSocket handshake: Unexpected response code: 403/)
+    })
   )
 })

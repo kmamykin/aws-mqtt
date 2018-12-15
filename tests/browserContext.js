@@ -71,12 +71,11 @@ export default appDir => {
   let browser = null
   const indexPage = `file://${path.resolve(path.join(__dirname, appDir, 'index.html'))}`
 
-  const noopInit = (page) => (page)
+  const noopInit = page => page
   const noopEval = () => new Promise(resolve => resolve(true))
   const noopCheck = () => {}
 
   const createTestFn = ({ init = noopInit, evaluate = noopEval, check = noopCheck }) => {
-
     const fn = async () => {
       const page = await browser.newPage()
       const log = [] // keep track of all console calls
@@ -86,8 +85,8 @@ export default appDir => {
       const evalResult = await page.evaluate(evaluate)
       check(evalResult, log)
     }
-    fn.evaluate = (newEvaluate) => createTestFn({ init: init, evaluate: newEvaluate, check: check })
-    fn.check = (newCheck) => createTestFn({ init: init, evaluate: evaluate, check: newCheck })
+    fn.evaluate = newEvaluate => createTestFn({ init: init, evaluate: newEvaluate, check: check })
+    fn.check = newCheck => createTestFn({ init: init, evaluate: evaluate, check: newCheck })
     return fn
   }
   return {
@@ -103,6 +102,20 @@ export default appDir => {
     },
     init: pageSetupFn => createTestFn({ init: pageSetupFn }),
     evaluate: browserFn => createTestFn({ evaluate: browserFn }),
-    check: testFn => createTestFn({ check: testFn })
+    check: testFn => createTestFn({ check: testFn }),
+    withPage: pageTestFn => async () => {
+      const page = await browser.newPage()
+      const log = [] // keep track of all console calls
+      page.on('console', msg => log.push({ type: msg.type(), text: msg.text() }))
+      const consoleEntries = index => {
+        if (index || index === 0) {
+          return log[index]
+        } else {
+          return log
+        }
+      }
+      await page.goto(indexPage)
+      await pageTestFn(page, consoleEntries)
+    },
   }
 }
