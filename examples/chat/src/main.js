@@ -9,13 +9,13 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
   IdentityPoolId: config.aws.cognito.identityPoolId
 })
 
-const client = AWSMqtt.connect({
+const client = new AWSMqtt.BrowserClient({
   WebSocket: window.WebSocket,
   region: AWS.config.region,
   credentials: AWS.config.credentials,
   endpoint: config.aws.iot.endpoint,
-  // clientId: 'mqtt-client-' + (Math.floor((Math.random() * 100000) + 1)),
-  clientId: 'mqtt-client-browser',
+  clientId: 'mqtt-client-' + (Math.floor((Math.random() * 100000) + 1)),
+  // clientId: 'mqtt-client-browser',
 })
 
 logEventsToConsole(client)
@@ -27,6 +27,7 @@ client.on('connect', () => {
   client.subscribe('$aws/events/presence/connected/mqtt-client-test')
 })
 client.on('message', (topic, message) => {
+  console.log(message)
   addLogEntry(`${topic} => ${message}`)
 })
 client.on('close', () => {

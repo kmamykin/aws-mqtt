@@ -71,42 +71,24 @@ export default appDir => {
   let browser = null
   const indexPage = `file://${path.resolve(path.join(__dirname, appDir, 'index.html'))}`
 
-  const noopInit = page => page
-  const noopEval = () => new Promise(resolve => resolve(true))
-  const noopCheck = () => {}
-
-  const createTestFn = ({ init = noopInit, evaluate = noopEval, check = noopCheck }) => {
-    const fn = async () => {
-      const page = await browser.newPage()
-      const log = [] // keep track of all console calls
-      page.on('console', msg => log.push({ type: msg.type(), text: msg.text() }))
-      await page.goto(indexPage)
-      init(page)
-      const evalResult = await page.evaluate(evaluate)
-      check(evalResult, log)
-    }
-    fn.evaluate = newEvaluate => createTestFn({ init: init, evaluate: newEvaluate, check: check })
-    fn.check = newCheck => createTestFn({ init: init, evaluate: evaluate, check: newCheck })
-    return fn
-  }
   return {
     start: () => async () => {
       await compileApp(appDir)
       browser = await puppeteer.launch({
-        ignoreHTTPSErrors: true,
+        // ignoreHTTPSErrors: true,
+        // devtools: true
       })
     },
     shutdown: () => async () => {
       await cleanup(appDir)
       await browser.close()
     },
-    init: pageSetupFn => createTestFn({ init: pageSetupFn }),
-    evaluate: browserFn => createTestFn({ evaluate: browserFn }),
-    check: testFn => createTestFn({ check: testFn }),
     withPage: pageTestFn => async () => {
       const page = await browser.newPage()
       const log = [] // keep track of all console calls
-      page.on('console', msg => log.push({ type: msg.type(), text: msg.text() }))
+      page.on('console', msg => {
+        log.push({ type: msg.type(), text: msg.text() })
+      })
       const consoleEntries = index => {
         if (index || index === 0) {
           return log[index]
@@ -115,7 +97,12 @@ export default appDir => {
         }
       }
       await page.goto(indexPage)
-      await pageTestFn(page, consoleEntries)
+      try {
+        await pageTestFn(page, consoleEntries)
+      } catch (e) {
+        console.error('Unexpected failure evaluating script')
+        console.error(e)
+      }
     },
   }
 }

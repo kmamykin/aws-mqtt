@@ -52,9 +52,9 @@ window.invalidCredentialsOptions = (options = {}) => {
 }
 
 window.withConsoleLogging = client => {
-  client.on('connect', connack =>
-    console.log('CONNECT', JSON.stringify(connack))
-  )
+  // client.on('connect', connack =>
+  //   console.log('CONNECT', JSON.stringify(connack))
+  // )
   client.on('reconnect', () => console.log('RECONNECT'))
   client.on('close', () => console.log('CLOSE'))
   client.on('offline', () => console.log('OFFLINE'))
