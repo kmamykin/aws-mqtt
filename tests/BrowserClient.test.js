@@ -1,6 +1,6 @@
 import browserContext from './browserContext'
 import config from '../examples/config' // NOTE: make sure to copy config.example.js to config.js and fill in your values
-import { createPublisher, NodeClient } from '../src'
+import { publishMessage, NodeClient } from '../src'
 import AWS from 'aws-sdk/global'
 
 jest.setTimeout(10000)
@@ -106,8 +106,7 @@ describe('browser', () => {
           })
         })
       }, topic)
-      const publish = createPublisher(nodeClientOptions(config))
-      publish(topic, 'message from server')
+      publishMessage(nodeClientOptions(config), topic, 'message from server')
       await page.waitForFunction(() => window.messages.length > 0, { polling: 100, timeout: 3000 })
       const messages = await page.evaluate(() => {
         return new Promise(resolve => {

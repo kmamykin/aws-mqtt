@@ -50,23 +50,7 @@ function cleanup(appDir) {
     })
   })
 }
-const wrapPage = page => {
-  return {
-    async run(testFn) {
-      console.log('Running\n', testFn.toString())
-      await page.evaluate(testFunctionSrc => {
-        // re-creating function in browser context
-        window.__TEST_FUNCTION__ = new Function(' return (' + testFunctionSrc + ').apply(null, arguments)')
-      }, testFn.toString())
 
-      return await page.evaluate(() => {
-        return new Promise((resolve, reject) => {
-          window.__TEST_FUNCTION__.call(null, resolve, reject)
-        })
-      })
-    },
-  }
-}
 export default appDir => {
   let browser = null
   const indexPage = `file://${path.resolve(path.join(__dirname, appDir, 'index.html'))}`
@@ -76,7 +60,7 @@ export default appDir => {
       await compileApp(appDir)
       browser = await puppeteer.launch({
         // ignoreHTTPSErrors: true,
-        // devtools: true
+        // devtools: true, // uncomment this when in trouble to see any errors in DevTools console
       })
     },
     shutdown: () => async () => {
@@ -101,7 +85,7 @@ export default appDir => {
         await pageTestFn(page, consoleEntries)
       } catch (e) {
         console.error('Unexpected failure evaluating script')
-        console.error(e)
+        throw e
       }
     },
   }

@@ -5,9 +5,9 @@ import https from 'https'
 import WS from 'ws'
 import processOptions from './processOptions'
 
-const createStreamBuilder = (aws) => {
-  return (client) => {
-    const stream = new WSStream(function webSocketFactory(callback) {
+const createStreamBuilder = aws => {
+  return client => {
+    const stream = new WSStream(callback => {
       // Need to refresh AWS credentials, which expire after initial creation.
       // For example CognitoIdentity credentials expire after an hour
       aws.credentials.get(err => {
@@ -35,7 +35,7 @@ const createStreamBuilder = (aws) => {
     // MQTT.js BrowserClient suppresses connection errors (?!), loosing the original error
     // This makes it very difficult to debug what went wrong.
     // Here we setup a once error handler to propagate stream error to client's error
-    const propagateConnectionErrors = (err) => client.emit('error', err)
+    const propagateConnectionErrors = err => client.emit('error', err)
     stream.once('error', propagateConnectionErrors)
     return stream
   }

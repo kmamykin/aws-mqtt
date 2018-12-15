@@ -27,7 +27,6 @@ describe('AwsMqttClient', () => {
         endpoint: config.aws.iot.endpoint,
         clientId: 'mqtt-client-test1',
       })
-      // logEventsToConsole(client)
       client.on('connect', () => {
         client.end()
         done(new Error('Should not have emitted connect event'))
@@ -47,7 +46,7 @@ describe('AwsMqttClient', () => {
         endpoint: config.aws.iot.endpoint,
         clientId: 'mqtt-client-test2',
       })
-      logEventsToConsole(client)
+      // logEventsToConsole(client)
       client.on('connect', () => {
         client.end()
         done()

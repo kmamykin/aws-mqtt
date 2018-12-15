@@ -1,9 +1,9 @@
 import BrowserClient from './BrowserClient'
 import NodeClient from './NodeClient'
-import createPublisher from './createPublisher'
+import publishMessage from './publishMessage'
 
 module.exports = {
   BrowserClient,
   NodeClient,
-  createPublisher,
+  publishMessage,
 }

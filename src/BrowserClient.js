@@ -5,7 +5,7 @@ import processOptions from './processOptions'
 
 const createStreamBuilder = aws => {
   return client => {
-    const stream = new MqttWebSocketStream(function webSocketFactory(callback) {
+    const stream = new MqttWebSocketStream(callback => {
       // console.log('In webSocketFactory')
       // Need to refresh AWS credentials, which expire after initial creation.
       // For example CognitoIdentity credentials expire after an hour

@@ -1,21 +1,19 @@
 const AWS = require('aws-sdk')
-const AWSMqtt = require('../../lib/index')
-const WebSocket = require('ws')
+const { NodeClient } = require('../../lib')
 const config = require('../config') // NOTE: make sure to copy config.example.js to config.js and fill in your values
-const {logEventsToConsole} = require('./utils')
+const { logEventsToConsole } = require('./utils')
 
 // Initialize the Amazon Cognito credentials provider
 AWS.config.region = config.aws.region
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-  IdentityPoolId: config.aws.cognito.identityPoolId
+  IdentityPoolId: config.aws.cognito.identityPoolId,
 })
 
-const client = AWSMqtt.connect({
-  WebSocket: WebSocket,
+const client = new NodeClient({
   region: AWS.config.region,
-  credentials: AWS.config.credentials,
   endpoint: config.aws.iot.endpoint,
-  clientId: 'mqtt-time-publisher-' + (Math.floor((Math.random() * 100000) + 1)),
+  credentials: AWS.config.credentials,
+  clientId: 'mqtt-time-publisher-' + Math.floor(Math.random() * 100000 + 1),
 })
 
 const Timer = (fn, interval) => {
@@ -26,7 +24,7 @@ const Timer = (fn, interval) => {
     },
     stop: () => {
       clearInterval(t)
-    }
+    },
   }
 }
 
@@ -47,4 +45,3 @@ client.on('close', timeAnnouncer.stop)
 client.on('offline', timeAnnouncer.stop)
 
 logEventsToConsole(client)
-
