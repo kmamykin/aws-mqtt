@@ -106,7 +106,7 @@ describe('browser', () => {
           })
         })
       }, topic)
-      publishMessage(nodeClientOptions(config), topic, 'message from server')
+      await publishMessage(nodeClientOptions(config), topic, 'message from server')
       await page.waitForFunction(() => window.messages.length > 0, { polling: 100, timeout: 3000 })
       const messages = await page.evaluate(() => {
         return new Promise(resolve => {

@@ -21,11 +21,6 @@ export const isBrowserSocket = socket => {
 }
 
 export const initWebSocket = (stream, socket) => {
-  if (isBrowserSocket(socket)) {
-    // console.log('WebSocketStream: isBrowserSocket = true')
-  } else {
-    // console.log('WebSocketStream: isBrowserSocket = false')
-  }
   socket.binaryType = 'arraybuffer'
   socket.onopen = openHandler(stream)
   socket.onclose = closeHandler(stream)
@@ -33,16 +28,11 @@ export const initWebSocket = (stream, socket) => {
   socket.onmessage = messageHandler(stream)
 
   socket.addEventListener('unexpected-response', (req, res) => {
-    // console.log('UNEXPECTED RESPONSE')
-    // console.log('REQ', req.method, req.path, req._headers)
-    // console.log('RES HEADERS', res.headers)
     let data = ''
     res.on('data', chunk => {
-      // console.log('CHUNK' + chunk);
       data = data + chunk
     })
     res.on('end', () => {
-      // console.log('End of response.');
       const err = new Error('Unexpected server response: ' + res.statusCode)
       err.body = data
       closeStreamWithError(stream, err)
@@ -60,7 +50,6 @@ export const closeStreamWithError = (stream, err) => {
 }
 
 const openHandler = stream => evt => {
-  // console.log('WebSocketStream onopen', evt.target.url)
   stream.emit('connect')
 }
 
@@ -71,8 +60,6 @@ const statusCodes = {
 
 const closeHandler = stream => evt => {
   const { code, reason, wasClean } = evt
-  // console.log('WebSocketStream onclose', evt instanceof CloseEvent, code, reason, wasClean)
-  // console.log(evt.target._req)
   if (!wasClean) {
     const message = reason || statusCodes[code] || 'Connection closed with code ' + code
     console.log('close message', message)
@@ -91,10 +78,9 @@ const errorHandler = stream => evt => {
 }
 
 const messageHandler = stream => {
-  const toBuffer = b => (Buffer.isBuffer(b) ? b : new Buffer(b))
+  const toBuffer = b => (Buffer.isBuffer(b) ? b : Buffer.from(b))
 
   return evt => {
-    // console.log('WebSocketStream onmessage', evt.data)
     stream.push(toBuffer(evt.data))
   }
 }

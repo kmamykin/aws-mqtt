@@ -1,17 +1,15 @@
 import { Duplex } from 'stream'
-import { toAsyncFactory, isBrowserSocket, closeStreamWithError, initWebSocket, concatChunks } from './utils'
+import { toAsyncFactory, closeStreamWithError, initWebSocket, concatChunks } from './utils'
 
-class WSStream extends Duplex {
+export default class WSStream extends Duplex {
   constructor(socketOrFactory) {
     super()
     this.socket = null
     const asyncSocketFactory = toAsyncFactory(socketOrFactory)
     asyncSocketFactory((err, socket) => {
       if (err) {
-        // console.log('ERR, NO SOCKET', err)
         closeStreamWithError(this, err)
       } else {
-        // console.log('GOT SOCKET')
         this.socket = initWebSocket(this, socket)
       }
     })
@@ -46,42 +44,18 @@ const A_BIT_LATER = 100
 const sendBufferTask = (stream, buffer, callback) => () => {
   if (!stream.socket) {
     // still getting URL to connect to...
-    // console.log('sendBufferTask running... no socket yet')
     setTimeout(sendBufferTask(stream, buffer, callback), A_BIT_LATER)
     return
   }
   const socket = stream.socket
-  // console.log('sendBufferTask running...', 'socket.readyState', socket.readyState, 'socket.bufferedAmount', socket.bufferedAmount)
   switch (socket.readyState) {
     case socket.CONNECTING:
       // queue up until socket is opened and flushed
       setTimeout(sendBufferTask(stream, buffer, callback), A_BIT_LATER)
       break
     case socket.OPEN:
-      // determine if we are dealing with browser version of socket.send (sync) or ws version of socket.send (async)
-      if (isBrowserSocket(socket)) {
-        // we are in a browser
-        if (socket.bufferedAmount === 0) {
-          // only send data when nothing is buffered. All buffering is handled by the stream.
-          // Until callback is called, all data written to the stream will be buffered internally
-          try {
-            // socket.send() will sync append data to an internal socket buffer and increment socket.bufferedAmount
-            socket.send(buffer)
-            // We are done here. The data will either be sent over the network, or onerror event raised
-            return callback()
-          } catch (err) {
-            // Oops, rare but possible error writing to internal socket buffer
-            return callback(err)
-          }
-        } else {
-          // queue up until socket is opened and flushed
-          setTimeout(sendBufferTask(stream, buffer, callback), A_BIT_LATER)
-        }
-      } else {
-        // we are on a server, using ws.WebSocket
-        // console.log('we are on a server, using ws.WebSocket', buffer)
-        return socket.send(buffer, { mask: true, binary: true }, callback)
-      }
+      // we are on a server, using ws.WebSocket
+      socket.send(buffer, { mask: true, binary: true }, callback)
       break
     case socket.CLOSING:
       // Oops, can't write to closing socket. Discard the buffer.
@@ -95,5 +69,3 @@ const sendBufferTask = (stream, buffer, callback) => () => {
     //
   }
 }
-
-module.exports = WSStream
