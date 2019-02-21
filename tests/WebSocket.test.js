@@ -8,7 +8,7 @@ import AWS from 'aws-sdk/global'
 import config from '../examples/config' // NOTE: make sure to copy config.example.js to config.js and fill in your values
 
 // These tests ensure that the version of ws.WebSocket is compatible with the usage in this module
-// and with AWS IoT WebSocket connections (to a signed url)
+// and with AWS IoT WebSocket connections (connecting to a signed AWS url)
 describe('WebSocket compatibility', () => {
   describe('https.get', () => {
     // This replicates the way ws.WebSocket makes initial connection,
@@ -26,6 +26,7 @@ describe('WebSocket compatibility', () => {
       })
       request.on('error', function(err) {
         request.abort()
+        // we expect this error
         expect(err.message).toMatch(/ENOTSOCK/)
         done()
       })
@@ -110,6 +111,7 @@ function echoServer() {
 }
 
 function awsMqttUrl() {
+  // For this to work must hace configured aws cli profile named 'aws-mqtt'
   const credentials = new AWS.SharedIniFileCredentials({ profile: 'aws-mqtt' })
   const region = 'us-east-1'
   const expires = 10000

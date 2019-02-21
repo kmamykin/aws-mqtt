@@ -19,14 +19,12 @@ export default class WSStream extends Duplex {
   // chunk = [16], enc = "buffer"
   // chunk = "MQTT", enc = "utf8"
   _write(chunk, encoding, callback) {
-    // console.log('_write')
     sendBufferTask(this, concatChunks([{ chunk, encoding }]), callback)() // NOTE () to execute task now
   }
 
   // mqtt.js uses stream.cork(), then writes bunch of small buffers, then stream.uncork()
   // Define _writev to receive all those buffers and send them all at once in one WebSocket frame
   _writev(chunks, callback) {
-    // console.log('_writev', concatChunks(chunks))
     sendBufferTask(this, concatChunks(chunks), callback)() // NOTE () to execute task now
   }
 

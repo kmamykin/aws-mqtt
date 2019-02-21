@@ -27,6 +27,7 @@ export const initWebSocket = (stream, socket) => {
   socket.onerror = errorHandler(stream)
   socket.onmessage = messageHandler(stream)
 
+  // This event is only used for WS socket not the native WebSocket
   socket.addEventListener('unexpected-response', (req, res) => {
     let data = ''
     res.on('data', chunk => {
@@ -35,7 +36,11 @@ export const initWebSocket = (stream, socket) => {
     res.on('end', () => {
       const err = new Error('Unexpected server response: ' + res.statusCode)
       err.body = data
-      closeStreamWithError(stream, err)
+      // console.log('unexpected-response handler', res.statusCode, data)
+      stream.emit('error', err)
+      // IMPORTANT: first emit error, THEN socket.close, otherwise socket.close will emit its own generic error
+      // and our more informative err will never be seen
+      socket.close()
     })
   })
 
@@ -60,9 +65,9 @@ const statusCodes = {
 
 const closeHandler = stream => evt => {
   const { code, reason, wasClean } = evt
+  // console.log('WebSocketStream closeHandler:', code, reason, wasClean)
   if (!wasClean) {
     const message = reason || statusCodes[code] || 'Connection closed with code ' + code
-    console.log('close message', message)
     const err = new Error(message)
     err.code = code
     err.msg = message
@@ -73,8 +78,8 @@ const closeHandler = stream => evt => {
 
 const errorHandler = stream => evt => {
   const err = evt.error || evt // ws.WebSocket has evt.error, native WebSocket emits an error
-  // console.log('WebSocketStream onerror', JSON.stringify(evt), evt instanceof ErrorEvent, evt.colno, evt.error, evt.message)
-  // stream.emit('error', err)
+  // console.log('WebSocketStream onerror', err, evt.error, evt.message)
+  stream.emit('error', err)
 }
 
 const messageHandler = stream => {

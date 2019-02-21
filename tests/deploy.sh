@@ -6,6 +6,3 @@ aws cloudformation deploy \
     --capabilities CAPABILITY_IAM \
     --stack-name $STACK_NAME \
     --template-file ./cf-stack.yml
-
-#aws cloudformation describe-stacks \
-#    --stack-name $STACK_NAME
