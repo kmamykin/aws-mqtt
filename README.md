@@ -129,6 +129,9 @@ option on the [MQTT.js](https://github.com/mqttjs/MQTT.js) documentation.
 
 ## AWS Setup and Security
 
+There is an example [CloudFormation template](tests/cf-stack.yml) and [deploy script](tests/deploy.sh) to simplify 
+creation of Cognito Identity Pool.
+
 First, the required primer on [AWS JavaScript Configuration](http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/configuring-the-jssdk.html).
 There are multiple ways to configure AWS based on the use case. For example for usage in a web browser by un-authenticated users, the best practice is to use Cognito Identity.
 When Cognito Identity Pool is created, it's assigned an IAM role that is used by un-authenticated users. 
