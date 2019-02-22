@@ -16,15 +16,11 @@ export const concatChunks = chunks => {
   return Buffer.concat(buffers)
 }
 
-export const isBrowserSocket = socket => {
-  return socket.send.length != 3 // send is sync in browser and async with length 3 on server using 'ws' module
-}
-
 export const initWebSocket = (stream, socket) => {
   socket.binaryType = 'arraybuffer'
-  socket.onopen = openHandler(stream)
+  socket.onopen = openHandler(stream, socket)
   socket.onclose = closeHandler(stream)
-  socket.onerror = errorHandler(stream)
+  socket.onerror = noopHandler()
   socket.onmessage = messageHandler(stream)
 
   // This event is only used for WS socket not the native WebSocket
@@ -54,7 +50,8 @@ export const closeStreamWithError = (stream, err) => {
   stream.emit('close')
 }
 
-const openHandler = stream => evt => {
+const openHandler = (stream, socket) => evt => {
+  socket.onerror = errorHandler(stream)
   stream.emit('connect')
 }
 
@@ -76,10 +73,13 @@ const closeHandler = stream => evt => {
   stream.emit('close') // as a Readable, when socket is closed, indicate to consumers no more data is coming
 }
 
+const noopHandler = () => evt => {
+}
+
 const errorHandler = stream => evt => {
   const err = evt.error || evt // ws.WebSocket has evt.error, native WebSocket emits an error
   // console.log('WebSocketStream onerror', err, evt.error, evt.message)
-  stream.emit('error', err)
+  // stream.emit('error', err)
 }
 
 const messageHandler = stream => {

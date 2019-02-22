@@ -1,10 +1,10 @@
 const AWS = require('aws-sdk/global')
-const AWSMqttClient = require('../../lib/BrowserClient')
+const AWSMqttClient = require('../../lib')
 const config = require('../../examples/config')
 
 // exposing globals on window to be accessed in tests (in page.evaluate(() => { window.AWS })
 window.AWS = AWS
-window.AWSMqttClient = AWSMqttClient.default
+window.AWSMqttClient = AWSMqttClient
 window.config = config
 
 window.guestIdentityOptions = (options = {}) => {
@@ -59,7 +59,7 @@ window.withConsoleLogging = client => {
   client.on('close', () => console.log('CLOSE'))
   client.on('offline', () => console.log('OFFLINE'))
   client.on('error', err =>
-    console.log('ERROR', JSON.stringify({ message: err.message, code: err.code }))
+    console.log('ERROR', JSON.stringify(err))
   )
   client.on('end', () => console.log('END'))
   client.on('message', (topic, message, packet) =>

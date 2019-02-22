@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk')
-const { NodeClient } = require('../../lib')
+const NodeClient = require('../../lib/NodeClient')
 const config = require('../config') // NOTE: make sure to copy config.example.js to config.js and fill in your values
 const { logEventsToConsole } = require('./utils')
 

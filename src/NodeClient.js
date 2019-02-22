@@ -32,7 +32,7 @@ const createStreamBuilder = aws => {
         }
       })
     })
-    // MQTT.js BrowserClient suppresses connection errors (?!), loosing the original error
+    // MQTT.js Client suppresses connection errors (?!), loosing the original error
     // This makes it very difficult to debug what went wrong.
     // Here we setup a once error handler to propagate stream error to client's error
     const propagateConnectionErrors = err => client.emit('error', err)
@@ -41,9 +41,11 @@ const createStreamBuilder = aws => {
   }
 }
 
-export default class NodeClient extends MqttClient {
+class NodeClient extends MqttClient {
   constructor(options) {
     const { aws, mqttOptions } = processOptions(options)
     super(createStreamBuilder(aws), mqttOptions)
   }
 }
+
+module.exports = NodeClient

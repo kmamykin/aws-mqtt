@@ -1,6 +1,7 @@
 import browserContext from './browserContext'
 import config from '../examples/config' // NOTE: make sure to copy config.example.js to config.js and fill in your values
-import { publishMessage, NodeClient } from '../src'
+import NodeClient from '../src/NodeClient'
+import publishMessage from '../src/publishMessage'
 import AWS from 'aws-sdk/global'
 
 jest.setTimeout(10000)
@@ -81,12 +82,14 @@ describe('browser', () => {
         return new Promise(resolve => {
           const client = withConsoleLogging(new AWSMqttClient(invalidCredentialsOptions()))
           client.on('error', err => {
+            // console.log(err.code, err.message, err.toString(), typeof err)
             resolve(err.message)
           })
         })
       })
-      expect(connectionError).toMatch(/Connection was closed abnormally/)
+      // console.log(consoleEntries())
       expect(consoleEntries(0).text).toMatch(/WebSocket connection to .* failed: Error during WebSocket handshake: Unexpected response code: 403/)
+      expect(connectionError).toMatch(/Connection was closed abnormally/)
     })
   )
   test(

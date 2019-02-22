@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk/global'
-import AWSMqtt from '../../../lib/index'
+import AWSMqttClient from '../../../lib/index'
 import config from '../../config' // NOTE: make sure to copy config.example.js to config.js and fill in your values
 import { logEventsToConsole } from './utils'
 
@@ -9,8 +9,7 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
   IdentityPoolId: config.aws.cognito.identityPoolId
 })
 
-const client = new AWSMqtt.BrowserClient({
-  WebSocket: window.WebSocket,
+const client = new AWSMqttClient({
   region: AWS.config.region,
   credentials: AWS.config.credentials,
   endpoint: config.aws.iot.endpoint,

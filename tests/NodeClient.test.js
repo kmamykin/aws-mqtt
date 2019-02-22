@@ -1,4 +1,4 @@
-import AWSMqttClient from '../src/NodeClient'
+import NodeClient from '../src/NodeClient'
 import AWS from 'aws-sdk/global'
 import config from '../examples/config' // NOTE: make sure to copy config.example.js to config.js and fill in your values
 import { logEventsToConsole } from './utils'
@@ -14,15 +14,15 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 
 jest.setTimeout(10000)
 
-describe('AwsMqttClient', () => {
+describe('NodeClient', () => {
   let client = null
 
   describe('connection to AWS MQTT broker', () => {
     test('with wrong credentials emits error event', done => {
       // NOTE: MQTT client intentionally ignores stream connection errors
       // and emits OFFLINE/CLOSE events. This makes handling initial connectivity errors difficult.
-      // AwsMqttClient adds handlers to bubble up connection errors such as HTTP 403
-      client = new AWSMqttClient({
+      // NodeClient adds handlers to bubble up connection errors such as HTTP 403
+      client = new NodeClient({
         region: AWS.config.region + '1', // <- invalid region
         credentials: AWS.config.credentials,
         endpoint: config.aws.iot.endpoint,
@@ -42,7 +42,7 @@ describe('AwsMqttClient', () => {
       })
     })
     test('with right credentials successfully connects', done => {
-      client = new AWSMqttClient({
+      client = new NodeClient({
         region: AWS.config.region,
         credentials: AWS.config.credentials,
         endpoint: config.aws.iot.endpoint,

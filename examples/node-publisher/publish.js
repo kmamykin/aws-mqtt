@@ -2,7 +2,7 @@
 // Example: node publish.js "/chat" Hello
 
 const AWS = require('aws-sdk')
-const { publishMessage } = require('../../lib')
+const publishMessage = require('../../lib/publishMessage')
 
 const config = require('../config') // NOTE: make sure to copy config.example.js to config.js and fill in your values
 
