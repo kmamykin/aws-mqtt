@@ -2,23 +2,25 @@
 // Example: node publish.js "/chat" Hello
 
 const AWS = require('aws-sdk')
-const AWSMqtt = require('../../lib/index')
-const WebSocket = require('ws')
+const publishMessage = require('../../lib/publishMessage')
 
 const config = require('../config') // NOTE: make sure to copy config.example.js to config.js and fill in your values
 
 // Initialize the Amazon Cognito credentials provider
 AWS.config.region = config.aws.region
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-  IdentityPoolId: config.aws.cognito.identityPoolId
+  IdentityPoolId: config.aws.cognito.identityPoolId,
 })
 
-const publish = AWSMqtt.publisher({
-  WebSocket: WebSocket,
-  region: AWS.config.region,
-  credentials: AWS.config.credentials,
-  endpoint: config.aws.iot.endpoint
-})
 const topic = process.argv[2]
 const message = process.argv[3]
-publish(topic, message).then(() => console.log('Success'), console.error)
+
+publishMessage(
+  {
+    region: AWS.config.region,
+    endpoint: config.aws.iot.endpoint,
+    credentials: AWS.config.credentials,
+  },
+  topic,
+  message
+).then(() => console.log('Success'), console.error)

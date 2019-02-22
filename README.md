@@ -8,8 +8,9 @@ AWS MQTT Client can be used in browser as well as in node.js environment.
 
 Up until now an implementation of a realtime in-browser application required the use of either an external service 
 (e.g [Pusher](https://pusher.com/), [PubNub](https://www.pubnub.com/))
-or roll your own servers (e.g. using [socket.io](http://socket.io/)) that maintain connections with browsers and need scaling to respond to the changes in number of active users.
-Using AWS IoT MQTT broker as the realtime backend provides a low cost automatically scaled service for your application. 
+or roll your own servers (e.g. using [socket.io](http://socket.io/)) that maintain connections with browsers 
+and need scaling to respond to the changes in number of active users.
+Using AWS IoT MQTT broker as the realtime backend provides a low cost scalable service for your application. 
 
 ### Disclaimer
 
@@ -32,12 +33,11 @@ The example below assumes the use of Babel/Webpack. `aws-sdk` now officially sup
 
 ```javascript
 import AWS from 'aws-sdk/global'
-import AWSMqtt from 'aws-mqtt'
+import AWSMqttClient from 'aws-mqtt'
 AWS.config.region = 'us-east-1' // your region
 AWS.config.credentials = ... // See AWS Setup and Security below 
 
-const client = AWSMqtt.connect({
-  WebSocket: window.WebSocket, 
+const client = new AWSMqttClient({
   region: AWS.config.region,
   credentials: AWS.config.credentials,
   endpoint: '...iot.us-east-1.amazonaws.com', // NOTE: get this value with `aws iot describe-endpoint`
@@ -63,25 +63,24 @@ client.on('offline', () => {
   // ...
 })
 ```
-The `client` object in the above example is an instance of MqttClient from MQTT.js. For events and API see the [docs](https://github.com/mqttjs/MQTT.js#api).
 
-
+The `client` object in the above example is a subclass of MqttClient class from MQTT.js. 
+For events and API see the [docs](https://github.com/mqttjs/MQTT.js#api).
 
 ### In Node.js
 
-The same usage as in browser, but need to pass the constructor function for WebSocket in the options. [ws](https://github.com/websockets/ws) is recommented.
+The same usage as in browser, but require a different module - `require('aws-mqtt/NodeClient')` instead of `require('aws-mqtt')`. 
+[ws](https://github.com/websockets/ws) also needs to be installed.
 
 ```javascript
 // in node v6.x
 const AWS = require('aws-sdk')
-const AWSMqtt = require('aws-mqtt')
-const WebSocket = require('ws')
+const AWSMqttClient = require('aws-mqtt/NodeClient')
 
 AWS.config.region = 'us-east-1' 
 AWS.config.credentials = ... 
 
-const client = AWSMqtt.connect({
-  WebSocket: WebSocket, 
+const client = new AWSMqttClient({
   region: AWS.config.region,
   credentials: AWS.config.credentials,
   endpoint: '...iot.us-east-1.amazonaws.com', // NOTE: get this value with `aws iot describe-endpoint`
@@ -96,35 +95,42 @@ const client = AWSMqtt.connect({
 
 ```
 
-Note, that `AWSMqtt.connect`, the returns MqttClient, which sets up internal timers and the node.js instance will not exit until you call `client.end()`.
+### In AWS Lambda functions
+
+Creating a `NodeClient` instance will set up internal timers and the node.js process will not exit until you call `client.end()`.
 This is fine if you are developing a *long running* server app that subscribes and/or publishes messages.
 For ephemeral functions, such as AWS Lambda, this approach will cause the function invocation to timeout.
-The `will` option will send a message by the broker automatically when the client disconnect badly. 
-For more information of how to use it, look the [mqtt.Client](https://github.com/mqttjs/MQTT.js#mqttclientstreambuilder-options) 
-option on the [MQTT.js](https://github.com/mqttjs/MQTT.js) documentation.
 
-To publish a message to a topic - create a publish function through `AWSMqtt.publisher` invocation and call it with topic and message:
+To publish a single message to a topic and disconnect - require `publishMessage` and use it like this:
 
 ```javascript
 const AWS = require('aws-sdk')
-const AWSMqtt = require('aws-mqtt')
-const WebSocket = require('ws')
+const publishMessage = require('aws-mqtt/publishMessage')
 
 AWS.config.region = 'us-east-1' 
 AWS.config.credentials = ... 
 
-const publish = AWSMqtt.publisher({
-  WebSocket: WebSocket, 
+const config = {
   region: AWS.config.region,
   credentials: AWS.config.credentials,
   endpoint: '...iot.us-east-1.amazonaws.com' 
-})
+}
 
 // publish returns a Promise
-publish('/myTopic', 'my message').then(console.log, console.error)
+publishMessage(config, '/myTopic', 'my message').then(console.log, console.error)
 ```
 
+### Using MQTT `will`
+
+The `will` option will send a message by the broker automatically when the client disconnect badly. 
+For more information of how to use it, look the [mqtt.Client](https://github.com/mqttjs/MQTT.js#mqttclientstreambuilder-options) 
+option on the [MQTT.js](https://github.com/mqttjs/MQTT.js) documentation.
+
+
 ## AWS Setup and Security
+
+There is an example [CloudFormation template](tests/cf-stack.yml) and [deploy script](tests/deploy.sh) to simplify 
+creation of Cognito Identity Pool.
 
 First, the required primer on [AWS JavaScript Configuration](http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/configuring-the-jssdk.html).
 There are multiple ways to configure AWS based on the use case. For example for usage in a web browser by un-authenticated users, the best practice is to use Cognito Identity.
@@ -144,11 +150,11 @@ An example of policy statement for an un-authenticated user (tweak as you see fi
     }, {
         "Effect": "Allow",
         "Action":["iot:Subscribe"],
-        "Resource": ["arn:aws:iot:us-east-1:123456789012:topic/foo/bar"]
+        "Resource": ["arn:aws:iot:us-east-1:<...>:topic/foo/bar"]
     }, {
         "Effect": "Allow",
         "Action": ["iot:Publish"],
-        "Resource": ["arn:aws:iot:us-east-1:123456789012:topic/foo/bar/${iot:ClientId}"]
+        "Resource": ["arn:aws:iot:us-east-1:<...>:topic/foo/bar/${iot:ClientId}"]
     }]
 }
 ```

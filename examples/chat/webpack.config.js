@@ -10,6 +10,12 @@ module.exports = {
   node: {
     fs: "empty"
   },
+  resolve: {
+    root: [
+      path.resolve('./node_modules'),
+      path.resolve('../../node_modules')
+    ]
+  },
   module: {
     loaders: [
       {
@@ -24,6 +30,7 @@ module.exports = {
         }
       }, {
         test: /\.json$/,
+        include: /aws-sdk/,
         loader: 'json'
       }
     ]
