@@ -16,7 +16,7 @@ const createStreamBuilder = aws => {
           credentials: aws.credentials,
           endpoint: aws.endpoint,
           region: aws.region,
-          expires: 10000,
+          expires: aws.expires,
         })
         // MUST include 'mqtt' in the list of supported protocols.
         // See http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718127

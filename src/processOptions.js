@@ -1,11 +1,12 @@
 // Not all MQTT options will work with AWS, here we handpick options that are safe to pass on to MQTT
 export default (options = {}) => {
-  const { region, endpoint, credentials, ...otherOptions } = options
+  const { region, endpoint, credentials, expires, ...otherOptions } = options
   return {
     aws: {
       region,
       endpoint,
       credentials,
+      expires: expires || 60, // 60 sec default expiration
     },
     mqttOptions: {
       // merge passed in options
