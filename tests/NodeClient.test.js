@@ -59,4 +59,23 @@ describe('NodeClient', () => {
       })
     })
   })
+  describe('connection to a non-AWS MQTT broker or local broker provided by serverless-iot-local', () => {
+    test('without credentials successfully connects', done => {
+      client = new NodeClient({
+        // NOTE: not passing region or credentials
+        endpoint: 'wss://test.mosquitto.org:8081/',
+      })
+      // logEventsToConsole(client)
+      client.on('connect', () => {
+        client.end()
+        done()
+      })
+      client.on('error', err => {
+        // After connection the server closes connection. May require authentication?
+        // Ignore it, since we are testing that client can actually initially connect
+        // and we have not messed up signUrl method
+      })
+
+    })
+  })
 })

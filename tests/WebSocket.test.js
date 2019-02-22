@@ -3,7 +3,7 @@ const https = require('https')
 const tls = require('tls')
 const WS = require('ws')
 
-import { sign } from '../src/urlSigner'
+import { signedUrl } from '../src/urlSigner'
 import AWS from 'aws-sdk/global'
 import config from '../examples/config' // NOTE: make sure to copy config.example.js to config.js and fill in your values
 
@@ -116,5 +116,5 @@ function awsMqttUrl() {
   const region = 'us-east-1'
   const expires = 10000
   const endpoint = config.aws.iot.endpoint
-  return sign({ credentials, endpoint, region, expires })
+  return signedUrl({ credentials, endpoint, region, expires })
 }

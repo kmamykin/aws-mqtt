@@ -1,5 +1,5 @@
 import MqttClient from 'mqtt/lib/client'
-import { sign } from './urlSigner'
+import {signUrl} from './urlSigner'
 import MqttWebSocketStream from './streams/WebSocketStream'
 import processOptions from './processOptions'
 
@@ -7,17 +7,9 @@ const createStreamBuilder = aws => {
   return client => {
     const stream = new MqttWebSocketStream(callback => {
       // console.log('In webSocketFactory')
-      // Need to refresh AWS credentials, which expire after initial creation.
-      // For example CognitoIdentity credentials expire after an hour
-      aws.credentials.get(err => {
+
+      signUrl(aws, (err, url) => {
         if (err) return callback(err)
-        // console.log('Credentials', aws.credentials)
-        const url = sign({
-          credentials: aws.credentials,
-          endpoint: aws.endpoint,
-          region: aws.region,
-          expires: aws.expires,
-        })
         // MUST include 'mqtt' in the list of supported protocols.
         // See http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718127
         // 'mqttv3.1' is still supported, but it is an old informal sub-protocol
