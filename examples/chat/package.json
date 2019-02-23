@@ -18,7 +18,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.192.0"
+    "aws-sdk": "^2.192.0",
+    "aws-mqtt": "^1.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.14.0",

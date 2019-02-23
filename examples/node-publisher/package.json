@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.6.3",
-    "ws": "^1.1.1"
+    "aws-mqtt": "^1.0.0",
+    "ws": "^6.0.0"
   }
 }

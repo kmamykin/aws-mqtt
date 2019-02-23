@@ -82,7 +82,7 @@ For events and API see the [docs](https://github.com/mqttjs/MQTT.js#api).
 
 ### In Node.js
 
-The same usage as in browser, but require a different module - `require('aws-mqtt/NodeClient')` instead of `require('aws-mqtt')`. 
+The same usage as in browser, but require a different module - `require('aws-mqtt/lib/NodeClient')` instead of `require('aws-mqtt')`. 
 [ws](https://github.com/websockets/ws) also needs to be installed.
 
 Install ws if you don't have it installed yet
@@ -94,7 +94,7 @@ npm install ws@^6.0.0
 ```javascript
 // in node v6.x
 const AWS = require('aws-sdk')
-const AWSMqttClient = require('aws-mqtt/NodeClient')
+const AWSMqttClient = require('aws-mqtt/lib/NodeClient')
 
 AWS.config.region = 'us-east-1' 
 AWS.config.credentials = ... 
@@ -124,7 +124,7 @@ To publish a single message to a topic and disconnect - require `publishMessage`
 
 ```javascript
 const AWS = require('aws-sdk')
-const publishMessage = require('aws-mqtt/publishMessage')
+const publishMessage = require('aws-mqtt/lib/publishMessage')
 
 AWS.config.region = 'us-east-1' 
 AWS.config.credentials = ... 

@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk/global'
-import AWSMqttClient from '../../../lib/index'
+import AWSMqttClient from 'aws-mqtt'
 import config from '../../config' // NOTE: make sure to copy config.example.js to config.js and fill in your values
 import { logEventsToConsole } from './utils'
 
