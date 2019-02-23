@@ -65,8 +65,10 @@ describe('WebSocket compatibility', () => {
   })
 
   describe('WebSocket connection to AWS MQTT server', () => {
-    test('with no options (createConnection: tls.connect used by ws.WebSocket internally) connection fails', done => {
-      const socket = new WS(awsMqttUrl(), ['mqtt'], {})
+    // Skipping: This passes with ws@6.0.0 but fails with ws@6.1.4 - so the problem tested here
+    // has been fixed in ws@6.1.4
+    test.skip('with no options (createConnection: tls.connect used by ws.WebSocket internally) connection fails', done => {
+      const socket = new WS(awsMqttUrl(), ['mqtt'], { /* no agent passed */})
       socket.on('upgrade', res => {
         res.destroy()
         done(new Error('Expected to fail connection'))
@@ -77,6 +79,8 @@ describe('WebSocket compatibility', () => {
       })
     })
     test('with agent option succeeds', done => {
+      // This imitate the way NodeClient makes a WS connection to AWS MQTT, and should work with
+      // WS v6.0.0 - v6.1.4. Passing an agent seems to be the way to make it work for both ws versions
       const agent = new https.Agent()
       const socket = new WS(awsMqttUrl(), ['mqtt'], { agent })
       socket.on('upgrade', res => {

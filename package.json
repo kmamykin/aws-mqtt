@@ -37,7 +37,6 @@
     "prettier": "1.14.0",
     "puppeteer": "^1.6.2",
     "webpack": "^4.16.5",
-    "websocket-stream": "^5.1.2",
     "ws": "^6.0.0"
   },
   "dependencies": {
