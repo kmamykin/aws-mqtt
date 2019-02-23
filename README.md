@@ -3,8 +3,20 @@
 [![NPM](https://nodei.co/npm/aws-mqtt.png?global=true)](https://nodei.co/npm/aws-mqtt/)
 
 This module implements a client to connect to AWS IoT MQTT broker using WebSockets. 
-It can be used to create serverless realtime applications that elastically scale with demand.
-AWS MQTT Client can be used in browser as well as in node.js environment.  
+It can be used in a browser as well as in Node.js environment.  
+
+The main class exported from this package is a subclass of [MqttClient](https://github.com/mqttjs/MQTT.js) and exposes the same API.
+What this package adds is the following:
+
+* AWS IoT broker url signing logic
+* Refreshing of credentials and re-signing url on re-connects
+* Custom WebSocket stream implementation that is more efficient then out of the box mqtt.js/websocket-stream combo (this package handles corking/uncorking of the stream, whereas websocket-stream sends a separate frame per each byte written)
+* Validated connection options that work with AWS MQTT broker
+* Pins versions of `mqtt` and `aws-signature-v4` to a known tested combo, in the past lax version constraints broke this package
+* `NodeClient` that works in node (need to install ws separately)
+
+
+### Motivation 
 
 Up until now an implementation of a realtime in-browser application required the use of either an external service 
 (e.g [Pusher](https://pusher.com/), [PubNub](https://www.pubnub.com/))
@@ -72,6 +84,12 @@ For events and API see the [docs](https://github.com/mqttjs/MQTT.js#api).
 
 The same usage as in browser, but require a different module - `require('aws-mqtt/NodeClient')` instead of `require('aws-mqtt')`. 
 [ws](https://github.com/websockets/ws) also needs to be installed.
+
+Install ws if you don't have it installed yet
+
+```bash
+npm install ws@^6.0.0
+```
 
 ```javascript
 // in node v6.x
