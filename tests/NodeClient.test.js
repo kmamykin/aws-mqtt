@@ -71,11 +71,10 @@ describe('NodeClient', () => {
         done()
       })
       client.on('error', err => {
-        // After connection the server closes connection. May require authentication?
+        // After connection test.mosquitto.org closes connection with an error. May require authentication?
         // Ignore it, since we are testing that client can actually initially connect
         // and we have not messed up signUrl method
       })
-
     })
   })
 })

@@ -149,6 +149,48 @@ describe('browser', () => {
       expect(messages).toEqual(['message from client'])
     })
   )
+  test(
+    'connecting with empty will',
+    browser.withPage(async (page, consoleEntries) => {
+      await page.evaluate(() => {
+        return new Promise((resolve) => {
+          try {
+            const client = withConsoleLogging(new AWSMqttClient(guestIdentityOptions({will: {}})))
+          } catch (e) {
+            console.error(e.message)
+            resolve(e)
+          }
+        })
+      })
+      // console.log(consoleEntries())
+      expect(consoleEntries(0).text).toMatch(/Invalid will topic/)
+    })
+  )
+  test(
+    'connecting with valid will option',
+    browser.withPage(async (page, consoleEntries) => {
+      const result = await page.evaluate(() => {
+        return new Promise((resolve) => {
+          try {
+            const will = {
+              topic: '/chat',
+              payload: 'Good bye!'
+            }
+            const client = withConsoleLogging(new AWSMqttClient(guestIdentityOptions({will: will})))
+            client.on('connect', () => {
+              client.end()
+              resolve('connected')
+            })
+          } catch (e) {
+            console.error(e.message)
+            resolve('error')
+          }
+        })
+      })
+      // console.log(consoleEntries())
+      expect(result).toEqual('connected')
+    })
+  )
 })
 
 const nodeClientOptions = (config, options = {}) => {
