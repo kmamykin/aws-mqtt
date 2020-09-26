@@ -52,7 +52,7 @@ AWS.config.credentials = ... // See AWS Setup and Security below
 const client = new AWSMqttClient({
   region: AWS.config.region,
   credentials: AWS.config.credentials,
-  endpoint: '...iot.us-east-1.amazonaws.com', // NOTE: get this value with `aws iot describe-endpoint`
+  endpoint: '...iot.us-east-1.amazonaws.com', // NOTE: See below on how to get the endpoint domain
   expires: 600, // Sign url with expiration of 600 seconds
   clientId: 'mqtt-client-' + (Math.floor((Math.random() * 100000) + 1)), // clientId to register with MQTT broker. Need to be unique per client
   will: {
@@ -148,32 +148,59 @@ option on the [MQTT.js](https://github.com/mqttjs/MQTT.js) documentation.
 
 ## AWS Setup and Security
 
+### Endpoint
+
+See https://aws.amazon.com/blogs/iot/aws-iot-core-ats-endpoints/. If you don't use ATS endpoint (as was specified in this README some time ago), you will get
+`net::ERR_CERT_AUTHORITY_INVALID` error on connect.
+```
+aws iot describe-endpoint --endpoint-type iot:Data-ATS
+```
+
+### Policies
 There is an example [CloudFormation template](tests/cf-stack.yml) and [deploy script](tests/deploy.sh) to simplify 
 creation of Cognito Identity Pool.
 
 First, the required primer on [AWS JavaScript Configuration](http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/configuring-the-jssdk.html).
 There are multiple ways to configure AWS based on the use case. For example for usage in a web browser by un-authenticated users, the best practice is to use Cognito Identity.
-When Cognito Identity Pool is created, it's assigned an IAM role that is used by un-authenticated users. 
-That role needs to be given minimum required permissions (principle of least privilege). 
-In the case of IoT MQTT broker, that means restricting un-authenticated user to subscribe to specific topics or publish to specific topics.
+When a Cognito Identity Pool is created, it's assigned an IAM role that is used by un-authenticated users. 
+That role needs to be given a minimum required permissions policy (following the principle of least privilege). 
 Read more on [AWS IoT Policies](http://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html).
 
-An example of policy statement for an un-authenticated user (tweak as you see fit, note the use of `iot:ClientId` to dynamically limit the topics):
+An example of the most permissive policy. Good for development to avoid head scratching on why things don't work. Not recommended for production:
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [{
+        "Effect": "Allow",
+        "Action": ["iot:*"],
+        "Resource": ["*"]
+    }]
+}
+```
+
+An example of a more restrictive policy statement for an un-authenticated user 
+(tweak as you see fit, note the use of `iot:ClientId` to dynamically limit the topics). For more information see 
+https://docs.aws.amazon.com/iot/latest/developerguide/example-iot-policies-elements.html , https://docs.aws.amazon.com/iot/latest/developerguide/iot-action-resources.html
+. Note how the format of `Resource` is different for different `Actions`:
 ```json
 {
     "Version": "2012-10-17",
     "Statement": [{
         "Effect": "Allow",
         "Action": ["iot:Connect"],
-        "Resource": ["*"]
+        "Resource": ["arn:aws:iot:us-east-1:<...>:client/${iot:ClientId}"]
     }, {
         "Effect": "Allow",
         "Action":["iot:Subscribe"],
-        "Resource": ["arn:aws:iot:us-east-1:<...>:topic/foo/bar"]
+        "Resource": ["arn:aws:iot:us-east-1:<...>:topicfilter/foo/bar/*"]
     }, {
         "Effect": "Allow",
-        "Action": ["iot:Publish"],
-        "Resource": ["arn:aws:iot:us-east-1:<...>:topic/foo/bar/${iot:ClientId}"]
+        "Action": ["iot:Receive"],
+        "Resource": ["arn:aws:iot:us-east-1:<...>:topic/foo/bar/*"]
+    }, {
+         "Effect": "Allow",
+         "Action": ["iot:Publish"],
+         "Resource": ["arn:aws:iot:us-east-1:<...>:topic/.../${iot:ClientId}"]
     }]
 }
 ```
