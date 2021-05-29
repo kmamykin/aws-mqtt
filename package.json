@@ -37,7 +37,7 @@
     "prettier": "1.14.0",
     "puppeteer": "^1.6.2",
     "webpack": "^4.16.5",
-    "ws": "^6.0.0"
+    "ws": "^7.4.6"
   },
   "dependencies": {
     "aws-signature-v4": "1.2.1",
