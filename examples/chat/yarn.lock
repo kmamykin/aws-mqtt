@@ -123,9 +123,9 @@ atob@^2.1.1:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
 
-aws-mqtt@1.0.0-pre1:
-  version "1.0.0-pre1"
-  resolved "https://registry.yarnpkg.com/aws-mqtt/-/aws-mqtt-1.0.0-pre1.tgz#d1cf291a6c2afeb07c370651a9bf55059aa2ca44"
+aws-mqtt@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/aws-mqtt/-/aws-mqtt-1.0.0.tgz#7fc538cb86c9ab9113882e409fc2d29661885f71"
   dependencies:
     aws-signature-v4 "1.2.1"
     mqtt "2.18.2"
@@ -1025,7 +1025,7 @@ debug@2.6.9, debug@^2.1.2, debug@^2.2.0, debug@^2.3.3, debug@^2.6.8, debug@^2.6.
   dependencies:
     ms "2.0.0"
 
-debug@^3.2.5, debug@^3.2.6:
+debug@^3.2.5:
   version "3.2.6"
   resolved "https://registry.yarnpkg.com/debug/-/debug-3.2.6.tgz#e83d17de16d8a7efb7717edbe5fb10135eee629b"
   dependencies:
@@ -1317,10 +1317,8 @@ find-up@^1.0.0:
     pinkie-promise "^2.0.0"
 
 follow-redirects@^1.0.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.7.0.tgz#489ebc198dc0e7f64167bd23b03c4c19b5784c76"
-  dependencies:
-    debug "^3.2.6"
+  version "1.14.7"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.7.tgz#2004c02eb9436eee9a21446a6477debf17e81685"
 
 for-in@^1.0.1, for-in@^1.0.2:
   version "1.0.2"
